@@ -34,3 +34,38 @@ newPhoto.addEventListener('change', handleFile);
 dropbox.addEventListener('dragenter', stopDefaultEvent);
 dropbox.addEventListener('dragover', stopDefaultEvent);
 dropbox.addEventListener('drop', drop);
+
+//Управление слайдерами 
+let ranges = document.querySelectorAll('.tune__range');
+let tunes = new Map();
+
+function handleRangeChange (event) {
+    let range = event.target;
+    let rangeName = range.name;
+    let rangeValue = range.value;
+    let filters = "";
+    
+    switch(rangeName) {
+        case 'blur':
+            rangeValue = rangeValue + 'px';
+            break;
+        case 'brightness':
+            rangeValue = rangeValue;
+            break;
+        case 'hue-rotate': 
+            rangeValue = rangeValue + 'deg';
+            break;
+        default:
+            rangeValue = rangeValue + '%';
+    }
+
+    if (tunes.has(rangeName)) {
+        tunes.delete(rangeName);
+    }
+
+    tunes.set(rangeName, rangeValue);
+    tunes.forEach((value, key) => filters += ` ${key}(${value})`);
+    photoToEdit.style.filter = filters;
+}
+
+ranges.forEach(item => item.addEventListener('input', handleRangeChange));

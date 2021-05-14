@@ -17,7 +17,45 @@
             <input type="file" name="newPhoto" id="newPhoto">
         </div>
         <div class="tools">
-
+            <div class="tools__tune tune">
+                <p class="tune__wrap">
+                    <label class="tune__label" for="">Яркость</label>
+                    <input class="tune__range" type="range" name="brightness" id="brightness" min="0" max="10" value="0">
+                </p>
+                <p class="tune__wrap">
+                    <label class="tune__label" for="saturate">Насыщенность</label>
+                    <input class="tune__range" type="range" name="saturate" id="saturate" min="0" max="500" value="100">
+                </p>
+                <p class="tune__wrap">
+                    <label class="tune__label" for="hue-rotate">Оттенок</label>
+                    <input class="tune__range" type="range" name="hue-rotate" id="hue-rotate" min="0" max="360" value="0">
+                </p>
+                <p class="tune__wrap">
+                    <label class="tune__label" for="invert">Инверсия</label>
+                    <input class="tune__range" type="range" name="invert" id="invert" min="0" max="100" value="0">
+                </p>
+                <p class="tune__wrap">
+                    <label class="tune__label" for="blur">Размытие</label>
+                    <input class="tune__range" type="range" name="blur" id="blur" min="0" max="10" value="0">
+                </p>
+                <p class="tune__wrap">
+                    <label class="tune__label" for="contrast">Констраст</label>
+                    <input class="tune__range" type="range" name="contrast" id="contrast" min="0" max="200" value="100">
+                </p>
+                <p class="tune__wrap">
+                    <label class="tune__label" for="grayscale">Оттенки серого</label>
+                    <input class="tune__range" type="range" name="grayscale" id="grayscale" min="0" max="100" value="0">
+                </p>
+            </div>
+            <div class="tools__text text">
+                <h2 class="text__label">Добавить текст на фото?</h2>
+                <input class="text__input" type="text" name="text" id="text" placeholder="Введите текст">
+                <button class="text__add">Добавить текст</button>
+            </div>
+            <div class="tools__buttons buttons">
+                <button class="save" type="button">Сохранить изображение</button>
+                <button class="reset" type="button">Сбросить все изменения</button>
+            </div>
         </div>
     </div>
     <script src="scripts/script.js"></script>
