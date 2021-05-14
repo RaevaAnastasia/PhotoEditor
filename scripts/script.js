@@ -100,7 +100,8 @@ window.onload = function () {
     let resetButton = document.querySelector('.reset');
 
     function resetAllFilters() {
-        photoToEdit.style.filter = '';
+        ctx.filter = 'none';
+        drawImage();
         ranges.forEach((range) => range.value = 0);
         tunes.clear();
     }
