@@ -16,6 +16,7 @@ function changePhotoURl(file) {
 function handleFile() {
     const file = this.files[0];
     changePhotoURl(file);
+    resetAllFilters();
 }
 
 function stopDefaultEvent(event) {
@@ -28,6 +29,7 @@ function drop(event) {
 
     let file = event.dataTransfer.files[0];
     changePhotoURl(file);
+    resetAllFilters();
 }
 
 newPhoto.addEventListener('change', handleFile);
@@ -69,3 +71,14 @@ function handleRangeChange (event) {
 }
 
 ranges.forEach(item => item.addEventListener('input', handleRangeChange));
+
+//Сбрасываем фильтры
+let resetButton = document.querySelector('.reset');
+
+function resetAllFilters() {
+    photoToEdit.style.filter = '';
+    ranges.forEach((range) => range.value = 0);
+    tunes.clear();
+}
+
+resetButton.addEventListener('click', resetAllFilters);
