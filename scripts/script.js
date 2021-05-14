@@ -12,8 +12,12 @@ window.onload = function () {
     height = document.documentElement.clientHeight;
     canvas.width = width;
     canvas.height = height;
+
+    function drawImage() {
+        ctx.drawImage(photoToEdit, 0, 0, width, width * photoToEdit.height / photoToEdit.width);
+    }
     
-    ctx.drawImage(photoToEdit, 0, 0, width, width * photoToEdit.height / photoToEdit.width);
+    drawImage();
 
     //Загрузка файла
     let newPhoto  = document.querySelector('#newPhoto');
@@ -24,8 +28,8 @@ window.onload = function () {
         photoToEdit.src = fileURL;
         photoToEdit.onload = function() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(photoToEdit, 0, 0, width, width * photoToEdit.height / photoToEdit.width);
-        }
+            drawImage();
+        };
         file.onload = function() {
             window.URL.revokeObjectURL(this.src);
         };
@@ -85,7 +89,9 @@ window.onload = function () {
 
         tunes.set(rangeName, rangeValue);
         tunes.forEach((value, key) => filters += ` ${key}(${value})`);
-        photoToEdit.style.filter = filters;
+        console.log(filters);
+        ctx.filter = filters;
+        drawImage();
     }
 
     ranges.forEach(item => item.addEventListener('input', handleRangeChange));
