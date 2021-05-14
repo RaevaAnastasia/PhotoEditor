@@ -22,6 +22,10 @@ window.onload = function () {
     function changePhotoURl(file) {
         let fileURL = window.URL.createObjectURL(file);
         photoToEdit.src = fileURL;
+        photoToEdit.onload = function() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(photoToEdit, 0, 0, width, width * photoToEdit.height / photoToEdit.width);
+        }
         file.onload = function() {
             window.URL.revokeObjectURL(this.src);
         };
