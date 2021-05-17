@@ -79,8 +79,12 @@ window.onload = function () {
             case 'hue-rotate': 
                 rangeValue = rangeValue + 'deg';
                 break;
-            default:
+            case 'saturate':
+            case 'invert':
+            case 'contrast':
+            case 'grayscale':
                 rangeValue = rangeValue + '%';
+                break;
         }
 
         if (tunes.has(rangeName)) {
