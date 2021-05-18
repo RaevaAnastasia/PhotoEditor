@@ -129,9 +129,15 @@ window.onload = function () {
     let closeButton = modalAddPresetName.querySelector('.modal__close');
     let readyButton = modalAddPresetName.querySelector('.modal__btn-add-name');
     let presetName = '';
+    let warning = document.querySelector('.warning');
+    let warningBtn = warning.querySelector('.warning__button');
 
     function showModal() {
         modalAddPresetName.style.display = 'block';
+    }
+
+    function closeWarning() {
+        warning.style.display = 'none';
     }
 
     function setDefaultName() {
@@ -141,6 +147,14 @@ window.onload = function () {
 
     function closeModal() {
         modalAddPresetName.style.display = 'none';
+    }
+
+    function checkShowModal() {
+        if (tunes.size == 0) {
+            warning.style.display = 'block';
+        } else {
+            showModal();
+        }
     }
     
     function saveCustomPreset() {
@@ -155,10 +169,10 @@ window.onload = function () {
         localStorage.setItem(presetName, tunesToJSON);
         inputPresetName.value = '';
         closeModal();
-        
     }
     
+    warningBtn.addEventListener('click', closeWarning);
     readyButton.addEventListener('click', saveCustomPreset);
     closeButton.addEventListener('click', closeModal);
-    addPresetButton.addEventListener('click', showModal);
+    addPresetButton.addEventListener('click', checkShowModal);
 };
