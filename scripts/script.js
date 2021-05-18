@@ -99,7 +99,7 @@ window.onload = function () {
     }
 
     ranges.forEach(item => item.addEventListener('input', handleRangeChange));
-
+    
     //Сбрасываем фильтры
     let resetButton = document.querySelector('.reset');
 
@@ -121,4 +121,44 @@ window.onload = function () {
     }
 
     saveButton.addEventListener('click', saveImage);
+
+    //Сохранение кастомного пресета - сочетание фильтров
+    let addPresetButton = document.querySelector('.add-preset');
+    let modalAddPresetName = document.querySelector('.modal');
+    let inputPresetName = modalAddPresetName.querySelector('#preset-name');
+    let closeButton = modalAddPresetName.querySelector('.modal__close');
+    let readyButton = modalAddPresetName.querySelector('.modal__btn-add-name');
+    let presetName = '';
+
+    function showModal() {
+        modalAddPresetName.style.display = 'block';
+    }
+
+    function setDefaultName() {
+        let date = new Date();
+        presetName = `${date.getDate()}.${date.getMonth()}.${date.getFullYear()}  ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+    }
+
+    function closeModal() {
+        modalAddPresetName.style.display = 'none';
+    }
+    
+    function saveCustomPreset() {
+        let tunesToObj = Object.fromEntries(tunes);
+        let tunesToJSON = JSON.stringify(tunesToObj);
+        
+        presetName = inputPresetName.value;
+        if (presetName == '') {
+            setDefaultName();
+        }
+        
+        localStorage.setItem(presetName, tunesToJSON);
+        inputPresetName.value = '';
+        closeModal();
+        
+    }
+    
+    readyButton.addEventListener('click', saveCustomPreset);
+    closeButton.addEventListener('click', closeModal);
+    addPresetButton.addEventListener('click', showModal);
 };

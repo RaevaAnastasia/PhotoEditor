@@ -48,6 +48,12 @@
                     <input class="tune__range" type="range" name="grayscale" id="grayscale" min="0" max="100" value="0">
                 </p>
             </div>
+            <div class="presets">
+                <h2>Добавьте свой пресет</h2>
+                <button class="add-preset" type="button">
+                    <img src="img/heart.svg" alt="Add preset" width="70" height="70">
+                </button>
+            </div>
             <div class="tools__text text">
                 <h2 class="text__label">Добавить текст на фото?</h2>
                 <input class="text__input" type="text" name="text" id="text" placeholder="Введите текст">
@@ -58,6 +64,12 @@
                 <button class="reset" type="button">Сбросить все изменения</button>
             </div>
         </div>
+    </div>
+    <div class="modal" style='display: none;'>
+        <h3>Название для вашего пресета</h3>
+        <input class="modal__preset-name" type="text" name="preset-name" id="preset-name" placeholder="Ваше название">
+        <button class="modal__btn-add-name" type="button">Готово</button>
+        <button class="modal__close" type="button">Закрыть</button>
     </div>
     <script src="scripts/script.js"></script>
 </body>
