@@ -1,6 +1,25 @@
 "use strict";
 
 window.onload = function () {
+    //Показываем пресеты из Local Storage на странице
+    let presets = document.querySelector('.presets__list');
+    let presetsContent = '';
+
+    function getAllPresets() {
+        presetsContent = '';
+        for (let item in localStorage) {
+            if (localStorage.hasOwnProperty(item)){
+                let itemContent = `<li class="presets__item">
+                    <span class="presets__name"> ${item} </span>
+                </li>`;
+                presetsContent += itemContent;
+            }
+        }
+        presets.innerHTML = presetsContent;
+    }
+
+    getAllPresets();
+
     //Создание холста с изображением по умолчанию
     let photoToEdit = document.querySelector('.photo__img');
     let canvas = document.querySelector('#canvas');
@@ -169,6 +188,7 @@ window.onload = function () {
         localStorage.setItem(presetName, tunesToJSON);
         inputPresetName.value = '';
         closeModal();
+        getAllPresets();
     }
     
     warningBtn.addEventListener('click', closeWarning);
