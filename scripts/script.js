@@ -9,8 +9,9 @@ window.onload = function () {
         presetsContent = '';
         for (let item in localStorage) {
             if (localStorage.hasOwnProperty(item)){
-                let itemContent = `<li class="presets__item">
-                    <span class="presets__name"> ${item} </span>
+                let itemForDataSet = item.split(' ').join('_');
+                let itemContent = `<li data-name=${itemForDataSet} class="presets__item">
+                    <span class="presets__name" data-name=${itemForDataSet}> ${item} </span>
                 </li>`;
                 presetsContent += itemContent;
             }
@@ -161,7 +162,7 @@ window.onload = function () {
 
     function setDefaultName() {
         let date = new Date();
-        presetName = `${date.getDate()}.${date.getMonth()}.${date.getFullYear()}  ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+        presetName = `${date.getDate()}.${date.getMonth()}.${date.getFullYear()}-${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
     }
 
     function closeModal() {
@@ -195,4 +196,22 @@ window.onload = function () {
     readyButton.addEventListener('click', saveCustomPreset);
     closeButton.addEventListener('click', closeModal);
     addPresetButton.addEventListener('click', checkShowModal);
+
+    //Применение пресета к фото 
+    let presetsList = document.querySelectorAll('.presets__item');
+
+    function applyPreset(event) {
+        let presetToUse = event.target.dataset.name.split('_').join(' ');
+        let presetData = JSON.parse(localStorage.getItem(presetToUse));
+        let filters = '';
+
+        for (let item in presetData) {
+            filters += ` ${item}(${presetData[item]})`;
+        }
+                
+        ctx.filter = filters;
+        drawImage();
+    }
+
+    presetsList.forEach(item => item.addEventListener('click', applyPreset));
 };
