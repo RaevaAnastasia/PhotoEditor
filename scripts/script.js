@@ -8,8 +8,10 @@ window.onload = function () {
     function getAllPresets() {
         presetsContent = '';
         for (let item in localStorage) {
-            if (localStorage.hasOwnProperty(item)){
+            if (localStorage.hasOwnProperty(item) && item.indexOf('preset') == 0) {
                 let itemForDataSet = item.split(' ').join('_');
+                item = item.slice(6);
+                console.log(item);
                 let itemContent = `<li data-name=${itemForDataSet} class="presets__item">
                     <span class="presets__name" data-name=${itemForDataSet}> ${item} </span>
                 </li>`;
@@ -186,7 +188,7 @@ window.onload = function () {
             setDefaultName();
         }
         
-        localStorage.setItem(presetName, tunesToJSON);
+        localStorage.setItem('preset' + presetName, tunesToJSON);
         inputPresetName.value = '';
         closeModal();
         getAllPresets();
@@ -208,7 +210,7 @@ window.onload = function () {
         for (let item in presetData) {
             filters += ` ${item}(${presetData[item]})`;
         }
-                
+
         ctx.filter = filters;
         drawImage();
     }
