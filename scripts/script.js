@@ -5,21 +5,34 @@ window.onload = function () {
     let presets = document.querySelector('.presets__list');
     let presetsContent = '';
 
+    function addListenerToDeleteButton() {
+        let presetDeleteButton = document.querySelectorAll('.preset__delete');
+        presetDeleteButton.forEach(item => item.addEventListener('click', deletePreset));
+    }
+
+    function addListenerToPreset() {
+        let presetsList = document.querySelectorAll('.presets__item');
+        presetsList.forEach(item => item.addEventListener('click', applyPreset));
+    }
+
     function getAllPresets() {
         presetsContent = '';
         for (let item in localStorage) {
             if (localStorage.hasOwnProperty(item) && item.indexOf('preset') == 0) {
                 let itemForDataSet = item.split(' ').join('_');
                 item = item.slice(6);
-                console.log(item);
-                let itemContent = `<li data-name=${itemForDataSet} class="presets__item">
+                let itemContent = `<li class="presets__item">
                     <span class="presets__name" data-name=${itemForDataSet}> ${item} </span>
+                    <button class ="preset__delete" type="button" data-name=${itemForDataSet}>Удалить пресет</button>
                 </li>`;
                 presetsContent += itemContent;
             }
         }
         presets.innerHTML = presetsContent;
+        addListenerToDeleteButton();
+        addListenerToPreset();
     }
+    
 
     getAllPresets();
 
@@ -115,7 +128,6 @@ window.onload = function () {
 
         tunes.set(rangeName, rangeValue);
         tunes.forEach((value, key) => filters += ` ${key}(${value})`);
-        console.log(filters);
         ctx.filter = filters;
         drawImage();
     }
@@ -200,20 +212,28 @@ window.onload = function () {
     addPresetButton.addEventListener('click', checkShowModal);
 
     //Применение пресета к фото 
-    let presetsList = document.querySelectorAll('.presets__item');
-
+    
     function applyPreset(event) {
-        let presetToUse = event.target.dataset.name.split('_').join(' ');
-        let presetData = JSON.parse(localStorage.getItem(presetToUse));
-        let filters = '';
-
-        for (let item in presetData) {
-            filters += ` ${item}(${presetData[item]})`;
+        if (event.target.dataset.name) {
+            let presetToUse = event.target.dataset.name.split('_').join(' ');
+            let presetData = JSON.parse(localStorage.getItem(presetToUse));
+            let filters = '';
+    
+            for (let item in presetData) {
+                filters += ` ${item}(${presetData[item]})`;
+            }
+    
+            ctx.filter = filters;
+            drawImage();
         }
-
-        ctx.filter = filters;
-        drawImage();
     }
 
-    presetsList.forEach(item => item.addEventListener('click', applyPreset));
+    //Удаление пресета из списка пресетов
+
+    function deletePreset(event) {
+        let presetName = event.target.dataset.name.split('_').join(' ');
+        localStorage.removeItem(presetName);
+        let presetToDelete = event.target.closest(`li`);
+        presetToDelete.parentNode.removeChild(presetToDelete);
+    }
 };
