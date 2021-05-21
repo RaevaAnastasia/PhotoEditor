@@ -1,0 +1,42 @@
+.presets {
+    &__wrap {
+        display: flex;
+
+        @media screen and (max-width: 1000px) {
+            flex-direction: column;
+        }
+    }
+
+    &__add-preset {
+        width: 6rem;
+        height: 6rem;
+        background-image: url("../img/heart.svg");
+        background-repeat: no-repeat;
+        background-size: 80%;
+        background-position: center;
+        margin-right: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    &__list {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    &__item {
+        display: flex;
+        justify-content: space-between;
+        flex-direction: column;
+        margin-right: 2rem;
+        border: 2px solid black;
+        padding: 1rem;
+        border-radius: 4px;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    &__name {
+        margin-bottom: 1rem;
+        font-weight: bold;
+    }
+}

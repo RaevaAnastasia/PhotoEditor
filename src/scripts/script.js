@@ -23,7 +23,7 @@ window.onload = function () {
                 item = item.slice(6);
                 let itemContent = `<li class="presets__item">
                     <span class="presets__name" data-name=${itemForDataSet}> ${item} </span>
-                    <button class ="preset__delete" type="button" data-name=${itemForDataSet}>Удалить пресет</button>
+                    <button class ="preset__delete button" type="button" data-name=${itemForDataSet}>Удалить пресет</button>
                 </li>`;
                 presetsContent += itemContent;
             }
@@ -33,23 +33,20 @@ window.onload = function () {
         addListenerToPreset();
     }
     
-
     getAllPresets();
 
     //Создание холста с изображением по умолчанию
     let photoToEdit = document.querySelector('.photo__img');
+    let canvasContainer = document.querySelector('.photo__dropbox');
     let canvas = document.querySelector('#canvas');
     let ctx = canvas.getContext('2d');
-    let width;
-    let height;
-    
-    width = document.documentElement.clientWidth / 2;
-    height = document.documentElement.clientHeight;
+    let width = canvasContainer.offsetWidth;
+    let height = width * 1.4;
     canvas.width = width;
     canvas.height = height;
 
     function drawImage() {
-        ctx.drawImage(photoToEdit, 0, 0, width, width * photoToEdit.height / photoToEdit.width);
+        ctx.drawImage(photoToEdit, 0, 0, canvas.width, canvas.width * photoToEdit.height / photoToEdit.width);
     }
     
     drawImage();
@@ -135,7 +132,7 @@ window.onload = function () {
     ranges.forEach(item => item.addEventListener('input', handleRangeChange));
     
     //Сбрасываем фильтры
-    let resetButton = document.querySelector('.reset');
+    let resetButton = document.querySelector('.buttons__reset');
 
     function resetAllFilters() {
         ctx.filter = 'none';
@@ -147,7 +144,7 @@ window.onload = function () {
     resetButton.addEventListener('click', resetAllFilters);
 
     //Скачивание файла
-    let saveButton = document.querySelector('.save');
+    let saveButton = document.querySelector('.buttons__save');
 
     function saveImage() {
         let url = canvas.toDataURL('image/jpeg');
@@ -157,7 +154,7 @@ window.onload = function () {
     saveButton.addEventListener('click', saveImage);
 
     //Сохранение кастомного пресета - сочетание фильтров
-    let addPresetButton = document.querySelector('.add-preset');
+    let addPresetButton = document.querySelector('.presets__add-preset');
     let modalAddPresetName = document.querySelector('.modal');
     let inputPresetName = modalAddPresetName.querySelector('#preset-name');
     let closeButton = modalAddPresetName.querySelector('.modal__close');
@@ -165,13 +162,16 @@ window.onload = function () {
     let presetName = '';
     let warning = document.querySelector('.warning');
     let warningBtn = warning.querySelector('.warning__button');
+    let overlay = document.querySelector('.pop-up__overlay');
 
     function showModal() {
-        modalAddPresetName.style.display = 'block';
+        modalAddPresetName.classList.add('modal--show');
+        overlay.classList.add('pop-up__overlay--show');
     }
 
     function closeWarning() {
-        warning.style.display = 'none';
+        warning.classList.remove('warning--show');
+        overlay.classList.remove('pop-up__overlay--show');
     }
 
     function setDefaultName() {
@@ -180,12 +180,14 @@ window.onload = function () {
     }
 
     function closeModal() {
-        modalAddPresetName.style.display = 'none';
+        modalAddPresetName.classList.remove('modal--show');
+        overlay.classList.remove('pop-up__overlay--show');
     }
 
     function checkShowModal() {
         if (tunes.size == 0) {
-            warning.style.display = 'block';
+            warning.classList.add('warning--show');
+            overlay.classList.add('pop-up__overlay--show');
         } else {
             showModal();
         }

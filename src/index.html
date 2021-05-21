@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <title>PhotoEditor</title>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Cadr</h1>
+        <p class="title__desc">фоторедактор твоих лучших кадров</p>
+        <div class="editor">
+            <div class="photo">
+                <p class="photo__dropbox">
+                    <img class="photo__img" src="img/defaultImg.jpg" alt="Default Image" style="display: none;">
+                    <canvas id="canvas"></canvas>
+                </p>
+            </div>
+            <div class="tools">
+                <div class="tools__download tools__item">
+                    <h2 class="tools__subtitle">Загрузите фото или перетащите его на область с изображением</h2>
+                    <label class="tools__upload-label button" for="newPhoto">Загрузить фото</label>
+                    <input class="tools__upload visually-hidden" type="file" name="newPhoto" id="newPhoto">
+                </div>
+                <div class="tools__tune tune tools__item">
+                    <h2 class="tools__subtitle">Настройки</h2>
+                    <p class="tune__wrap">
+                        <label class="tune__label" for="">Яркость</label>
+                        <input class="tune__range" type="range" name="brightness" id="brightness" min="0" max="10" value="0">
+                    </p>
+                    <p class="tune__wrap">
+                        <label class="tune__label" for="saturate">Насыщенность</label>
+                        <input class="tune__range" type="range" name="saturate" id="saturate" min="0" max="500" value="0">
+                    </p>
+                    <p class="tune__wrap">
+                        <label class="tune__label" for="hue-rotate">Оттенок</label>
+                        <input class="tune__range" type="range" name="hue-rotate" id="hue-rotate" min="0" max="360" value="0">
+                    </p>
+                    <p class="tune__wrap">
+                        <label class="tune__label" for="invert">Инверсия</label>
+                        <input class="tune__range" type="range" name="invert" id="invert" min="0" max="100" value="0">
+                    </p>
+                    <p class="tune__wrap">
+                        <label class="tune__label" for="blur">Размытие</label>
+                        <input class="tune__range" type="range" name="blur" id="blur" min="0" max="10" value="0">
+                    </p>
+                    <p class="tune__wrap">
+                        <label class="tune__label" for="contrast">Констраст</label>
+                        <input class="tune__range" type="range" name="contrast" id="contrast" min="0" max="200" value="0">
+                    </p>
+                    <p class="tune__wrap">
+                        <label class="tune__label" for="grayscale">Оттенки серого</label>
+                        <input class="tune__range" type="range" name="grayscale" id="grayscale" min="0" max="100" value="0">
+                    </p>
+                </div>
+                <div class="tools__presets presets tools__item">
+                    <h2 class="tools__subtitle">Ваши пресеты</h2>
+                    <div class="presets__wrap">
+                        <button class="presets__add-preset button" type="button"></button>                    </button>
+                        <ul class="presets__list"></ul>
+                    </div>
+                </div>
+                <div class="tools__text text tools__item">
+                    <h2 class="tools__subtitle">Добавить текст</h2>
+                    <input class="text__input" type="text" name="text" id="text" placeholder="Введите текст">
+                    <button class="text__add button">Добавить текст</button>
+                </div>
+                <div class="tools__buttons buttons tools__item">
+                    <a class="buttons__save button" download>Сохранить изображение</a>
+                    <button class="buttons__reset button" type="button">Сбросить все изменения</button>
+                </div>
+            </div>
+        </div>
+        <div class="modal pop-up">
+            <h3 class="modal__title">Название для вашего пресета</h3>
+            <input class="modal__preset-name" type="text" name="preset-name" id="preset-name" placeholder="Ваше название">
+            <button class="modal__btn-add-name button" type="button">Готово</button>
+            <button class="modal__close button" type="button">Закрыть</button>
+        </div>
+        <div class="warning pop-up">
+            <p class="warning__text">Пожалуйста, выберите настройки для своего пресета!</p>
+            <button type="button" class="warning__button button">ОК</button>
+        </div>
+    </div>
+    <div class="pop-up__overlay"></div>
+    <script src="scripts/script.js"></script>
+</body>
+</html>

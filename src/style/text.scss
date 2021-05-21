@@ -1,0 +1,14 @@
+.text {
+    display: flex;
+    flex-direction: column;
+
+    &__input {
+        padding: 1rem;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+    }
+
+    &__add {
+        width: 60%;
+    }
+}
