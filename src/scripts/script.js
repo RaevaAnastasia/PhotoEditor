@@ -40,16 +40,27 @@ window.onload = function () {
     let canvasContainer = document.querySelector('.photo__dropbox');
     let canvas = document.querySelector('#canvas');
     let ctx = canvas.getContext('2d');
-    let width = canvasContainer.offsetWidth;
-    let height = width * 1.4;
-    canvas.width = width;
-    canvas.height = height;
+
+    function setCanvasParam()  {
+        let width = canvasContainer.offsetWidth;
+        let ratio = photoToEdit.height / photoToEdit.width;
+        let height = width * ratio;
+        canvas.width = width;
+        canvas.height = height;
+    }
 
     function drawImage() {
         ctx.drawImage(photoToEdit, 0, 0, canvas.width, canvas.width * photoToEdit.height / photoToEdit.width);
     }
+
+    function redrawCanvas() {
+        setCanvasParam();
+        drawImage();
+    }
     
+    setCanvasParam();
     drawImage();
+    window.onresize = redrawCanvas;
 
     //Загрузка файла
     let newPhoto  = document.querySelector('#newPhoto');
@@ -60,6 +71,7 @@ window.onload = function () {
         photoToEdit.src = fileURL;
         photoToEdit.onload = function() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            setCanvasParam();
             drawImage();
         };
         file.onload = function() {
