@@ -9,22 +9,55 @@
     &__dropbox {
         border: 1px dashed #000000;
         position: relative;
+        overflow: hidden;
 
-        &:hover::after {
-            display: block;
-        }
+        // &:hover::after {
+        //     display: block;
+        // }
 
-        &::after {
-            display: none;
-            content: "";
-            position: absolute;
-            width: 15rem;
-            height: 15rem;
-            top: 40%;
-            left: 50%;
-            background-image: url('../img/dragdrop.svg');
-            background-repeat: no-repeat;
-            opacity: 0.5;
-        }
+        // &::after {
+        //     display: none;
+        //     content: "";
+        //     position: absolute;
+        //     width: 15rem;
+        //     height: 15rem;
+        //     top: 40%;
+        //     left: 50%;
+        //     background-image: url('../img/dragdrop.svg');
+        //     background-repeat: no-repeat;
+        //     opacity: 0.5;
+        // }
+    }
+
+    &__text {
+        border: 1px dashed black;
+        padding: 2rem;
+        padding-top: 4rem;
+        position: absolute;
+        left: 10%;
+        top: 50%;
+        background-color: rgba(255, 255, 255, 0.6);
+        font-weight: bold;
+        font-size: 2rem;
+        display: flex;
+        flex-direction: column;
+        max-width: 80%;
+        word-wrap: break-word;    
+    }
+
+    &__delete-text {
+        background-image: url("../img/delete.svg");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 50%;
+        width: 3rem;
+        height: 3rem;
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+    }
+
+    &__add-text {
+        margin-top: 1rem;
     }
 }

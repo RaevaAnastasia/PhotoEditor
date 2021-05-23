@@ -127,6 +127,10 @@ window.onload = function () {
         tunes.forEach((value, key) => filters += ` ${key}(${value})`);
         ctx.filter = filters;
         drawImage();
+
+        if (textInput.value) {
+            applyText();
+        }
     }
 
     ranges.forEach(item => item.addEventListener('input', handleRangeChange));
@@ -227,6 +231,10 @@ window.onload = function () {
     
             ctx.filter = filters;
             drawImage();
+        
+            if (textInput.value) {
+                applyText();
+            }
         }
     }
 
@@ -238,4 +246,105 @@ window.onload = function () {
         let presetToDelete = event.target.closest(`li`);
         presetToDelete.parentNode.removeChild(presetToDelete);
     }
+
+    //Добавление текста
+    let textInput = document.querySelector('.text__input');
+    let textAddButton = document.querySelector('.text__add');
+    let clearTextButton = document.querySelector('.text__delete');
+
+    function addListenerToDeleteBtn() {
+        let deleteTextBtns = document.querySelectorAll('.photo__delete-text');
+        deleteTextBtns.forEach(item => item.addEventListener('click', deleteText));
+    }
+
+    function addListenerToAddTextButton() {
+        let addTextBtns = document.querySelectorAll('.photo__add-text');
+        addTextBtns.forEach(item => item.addEventListener('click', applyText));
+    }
+
+    function addListenerToMove() {
+        let textElements = document.querySelectorAll('.photo__text');
+        textElements.forEach(item => item.addEventListener('mousedown', moveText));
+    }
+
+    function createTextModal() {
+        let text = textInput.value;
+
+        let textElement = document.createElement('div');
+        textElement.classList.add('photo__text');
+        textElement.setAttribute('draggable', true);
+        textElement.textContent = text;
+        canvasContainer.appendChild(textElement);
+
+        let buttonDeleteText = document.createElement('button');
+        buttonDeleteText.setAttribute('type', 'button');
+        buttonDeleteText.classList.add('button');
+        buttonDeleteText.classList.add('photo__delete-text');
+        textElement.appendChild(buttonDeleteText);
+
+        let buttonAddTextHere = document.createElement('button');
+        buttonAddTextHere.setAttribute('type', 'button');
+        buttonAddTextHere.textContent = 'Добавить текст сюда';
+        buttonAddTextHere.classList.add('button');
+        buttonAddTextHere.classList.add('photo__add-text');
+        textElement.appendChild(buttonAddTextHere);
+
+        addListenerToDeleteBtn();
+        addListenerToAddTextButton();
+        addListenerToMove();
+    }
+    
+    function deleteText(event) {
+        let presetToDelete = event.target.closest(`div`);
+        presetToDelete.parentNode.removeChild(presetToDelete);
+        textInput.value = '';
+    }
+
+    function applyText(event) {
+        let element = event.target.closest('div');
+        let elementWidth = event.pageX - element.offsetWidth / 2 + 20;
+        let elementHeight = event.pageY - element.offsetHeight + 10;
+
+        ctx.font = 'bold 20px Roboto';
+        ctx.fillStyle = '#000000';
+        ctx.textAlign = 'center';
+        ctx.fillText(textInput.value, elementWidth, elementHeight);
+
+        deleteText(event);
+    }
+    
+    function moveText(event) {
+        let element = event.target.closest('div');
+        let shiftX = event.clientX - element.getBoundingClientRect().left;
+        let shiftY = event.clientY - element.getBoundingClientRect().top / 2;
+        
+        element.ondragstart = function() {
+            return false;
+        };
+        
+        function moveAt(x, y) {
+            element.style.left = x - shiftX + 'px';
+            element.style.top = y - shiftY + 'px';
+        }
+
+        function onMouseMove(event) {
+            moveAt(event.pageX, event.pageY);
+        }
+
+        dropbox.addEventListener('mousemove', onMouseMove);
+        
+        element.onmouseup = function() {
+            dropbox.removeEventListener('mousemove', onMouseMove);
+            element.onmouseup = null;
+        };
+        
+        element.onmouseout = function() {
+            dropbox.removeEventListener('mousemove', onMouseMove);
+            element.onmouseup = null;
+        };
+        
+    }
+    
+    textAddButton.addEventListener('click', createTextModal);
+    clearTextButton.addEventListener('click', drawImage);
 };
