@@ -333,8 +333,8 @@ window.onload = function () {
     }
     
     function deleteText(event) {
-        let presetToDelete = event.target.closest(`div`);
-        presetToDelete.parentNode.removeChild(presetToDelete);
+        let textToDelete = event.target.closest(`div`);
+        textToDelete.parentNode.removeChild(textToDelete);
         textInput.value = '';
     }
 
@@ -383,6 +383,6 @@ window.onload = function () {
         
     }
     
-    textAddButton.addEventListener('click', createTextModal);
+    textAddButton.addEventListener('click', () => {if (textInput.value) {createTextModal();}});
     clearTextButton.addEventListener('click', drawImage);
 };

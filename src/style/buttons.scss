@@ -1,5 +1,13 @@
 .buttons {
     &__save {
         margin-bottom: 1rem;
+        color: #000000;
+
+        &:hover,
+        &:focus,
+        &:active,
+        &:visited {
+            color: #000000;
+        }
     }
 }
