@@ -80,6 +80,7 @@ window.onload = function () {
     }
 
     function handleFile() {
+        console.log('here');
         const file = this.files[0];
         changePhotoURl(file);
         resetAllFilters();
@@ -145,7 +146,32 @@ window.onload = function () {
         }
     }
 
+    function setInitialValue(range) {
+        switch(range.id) {
+            case 'brightness': 
+                range.value = 1;
+                break;
+            case 'saturate':
+            case 'contrast':
+                range.value = 100;
+                break;
+            case 'hue-rotate':
+            case 'invert':
+            case 'blur':
+            case 'grayscale':
+            range.value = 0;
+            break;
+        }
+    }
+
+    function setToInitial(event) {
+        let range = event.target;
+        setInitialValue(range);
+        handleRangeChange(event);
+    }
+
     ranges.forEach(item => item.addEventListener('input', handleRangeChange));
+    ranges.forEach(item => item.addEventListener('dblclick', setToInitial));
     
     //Сбрасываем фильтры
     let resetButton = document.querySelector('.buttons__reset');
@@ -153,7 +179,7 @@ window.onload = function () {
     function resetAllFilters() {
         ctx.filter = 'none';
         drawImage();
-        ranges.forEach((range) => range.value = 0);
+        ranges.forEach((range) => setInitialValue(range));
         tunes.clear();
     }
 

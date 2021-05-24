@@ -25,17 +25,17 @@
                 <div class="tools__download tools__item">
                     <h2 class="tools__subtitle">Загрузите фото или перетащите его на область с изображением</h2>
                     <label class="tools__upload-label button" for="newPhoto">Загрузить фото</label>
-                    <input class="tools__upload visually-hidden" type="file" name="newPhoto" id="newPhoto">
+                    <input class="tools__upload visually-hidden" type="file" name="newPhoto" id="newPhoto" accept="image/*">
                 </div>
                 <div class="tools__tune tune tools__item">
                     <h2 class="tools__subtitle">Настройки</h2>
                     <p class="tune__wrap">
                         <label class="tune__label" for="">Яркость</label>
-                        <input class="tune__range" type="range" name="brightness" id="brightness" min="0" max="10" value="0">
+                        <input class="tune__range" type="range" name="brightness" id="brightness" min="1" max="10" value="1">
                     </p>
                     <p class="tune__wrap">
                         <label class="tune__label" for="saturate">Насыщенность</label>
-                        <input class="tune__range" type="range" name="saturate" id="saturate" min="0" max="500" value="0">
+                        <input class="tune__range" type="range" name="saturate" id="saturate" min="0" max="200" value="100">
                     </p>
                     <p class="tune__wrap">
                         <label class="tune__label" for="hue-rotate">Оттенок</label>
@@ -51,7 +51,7 @@
                     </p>
                     <p class="tune__wrap">
                         <label class="tune__label" for="contrast">Констраст</label>
-                        <input class="tune__range" type="range" name="contrast" id="contrast" min="0" max="200" value="0">
+                        <input class="tune__range" type="range" name="contrast" id="contrast" min="0" max="200" value="100">
                     </p>
                     <p class="tune__wrap">
                         <label class="tune__label" for="grayscale">Оттенки серого</label>
