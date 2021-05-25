@@ -80,7 +80,6 @@ window.onload = function () {
     }
 
     function handleFile() {
-        console.log('here');
         const file = this.files[0];
         changePhotoURl(file);
         resetAllFilters();
@@ -290,6 +289,49 @@ window.onload = function () {
     let textAddButton = document.querySelector('.text__add');
     let clearTextButton = document.querySelector('.text__delete');
 
+    class TextLabel {
+        createTextModal() {
+            this.text = textInput.value;
+
+            let textElement = document.createElement('div');
+            textElement.classList.add('photo__text');
+            textElement.setAttribute('draggable', true);
+            textElement.textContent = this.text;
+            canvasContainer.appendChild(textElement);
+    
+            let buttonDeleteText = document.createElement('button');
+            buttonDeleteText.setAttribute('type', 'button');
+            buttonDeleteText.classList.add('button');
+            buttonDeleteText.classList.add('photo__delete-text');
+            textElement.appendChild(buttonDeleteText);
+    
+            let buttonAddTextHere = document.createElement('button');
+            buttonAddTextHere.setAttribute('type', 'button');
+            buttonAddTextHere.textContent = 'Добавить текст сюда';
+            buttonAddTextHere.classList.add('button');
+            buttonAddTextHere.classList.add('photo__add-text');
+            textElement.appendChild(buttonAddTextHere);
+        }
+    }
+    function deleteText(event) {
+        let textToDelete = event.target.closest(`div`);
+        textToDelete.parentNode.removeChild(textToDelete);
+        textInput.value = '';
+    }
+    
+    function applyText(event) {
+        let element = event.target.closest('div');
+        let elementWidth = event.pageX - element.offsetWidth / 2 + 20;
+        let elementHeight = event.pageY - element.offsetHeight + 10;
+
+        ctx.font = 'bold 20px Roboto';
+        ctx.fillStyle = '#000000';
+        ctx.textAlign = 'center';
+        ctx.fillText(textInput.value, elementWidth, elementHeight);
+
+        deleteText(event);
+    } 
+
     function addListenerToDeleteBtn() {
         let deleteTextBtns = document.querySelectorAll('.photo__delete-text');
         deleteTextBtns.forEach(item => item.addEventListener('click', deleteText));
@@ -302,87 +344,44 @@ window.onload = function () {
 
     function addListenerToMove() {
         let textElements = document.querySelectorAll('.photo__text');
-        textElements.forEach(item => item.addEventListener('mousedown', moveText));
+        textElements.forEach(item => item.addEventListener('mousedown', MoveElement));
     }
 
-    function createTextModal() {
-        let text = textInput.value;
-
-        let textElement = document.createElement('div');
-        textElement.classList.add('photo__text');
-        textElement.setAttribute('draggable', true);
-        textElement.textContent = text;
-        canvasContainer.appendChild(textElement);
-
-        let buttonDeleteText = document.createElement('button');
-        buttonDeleteText.setAttribute('type', 'button');
-        buttonDeleteText.classList.add('button');
-        buttonDeleteText.classList.add('photo__delete-text');
-        textElement.appendChild(buttonDeleteText);
-
-        let buttonAddTextHere = document.createElement('button');
-        buttonAddTextHere.setAttribute('type', 'button');
-        buttonAddTextHere.textContent = 'Добавить текст сюда';
-        buttonAddTextHere.classList.add('button');
-        buttonAddTextHere.classList.add('photo__add-text');
-        textElement.appendChild(buttonAddTextHere);
-
-        addListenerToDeleteBtn();
-        addListenerToAddTextButton();
-        addListenerToMove();
-    }
-    
-    function deleteText(event) {
-        let textToDelete = event.target.closest(`div`);
-        textToDelete.parentNode.removeChild(textToDelete);
-        textInput.value = '';
-    }
-
-    function applyText(event) {
-        let element = event.target.closest('div');
-        let elementWidth = event.pageX - element.offsetWidth / 2 + 20;
-        let elementHeight = event.pageY - element.offsetHeight + 10;
-
-        ctx.font = 'bold 20px Roboto';
-        ctx.fillStyle = '#000000';
-        ctx.textAlign = 'center';
-        ctx.fillText(textInput.value, elementWidth, elementHeight);
-
-        deleteText(event);
-    }
-    
-    function moveText(event) {
+    function MoveElement(event) {
         let element = event.target.closest('div');
         let shiftX = event.clientX - element.getBoundingClientRect().left;
         let shiftY = event.clientY - element.getBoundingClientRect().top / 2;
-        
+
         element.ondragstart = function() {
             return false;
         };
-        
+
         function moveAt(x, y) {
             element.style.left = x - shiftX + 'px';
             element.style.top = y - shiftY + 'px';
         }
-
+    
         function onMouseMove(event) {
             moveAt(event.pageX, event.pageY);
         }
-
+        
+        function deleteListeners() {
+            dropbox.removeEventListener('mousemove',onMouseMove);
+            element.onmouseup = null;
+        }
+        
         dropbox.addEventListener('mousemove', onMouseMove);
-        
-        element.onmouseup = function() {
-            dropbox.removeEventListener('mousemove', onMouseMove);
-            element.onmouseup = null;
-        };
-        
-        element.onmouseout = function() {
-            dropbox.removeEventListener('mousemove', onMouseMove);
-            element.onmouseup = null;
-        };
-        
+        element.addEventListener('mouseup', deleteListeners);
+        element.addEventListener('mouseout', deleteListeners);
     }
     
-    textAddButton.addEventListener('click', () => {if (textInput.value) {createTextModal();}});
+    function initTextLabel() {
+        new TextLabel().createTextModal();
+        addListenerToDeleteBtn();
+        addListenerToAddTextButton();
+        addListenerToMove();
+    }
+
+    textAddButton.addEventListener('click', initTextLabel);
     clearTextButton.addEventListener('click', drawImage);
 };
