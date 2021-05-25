@@ -217,7 +217,14 @@ window.onload = function () {
 
     function setDefaultName() {
         let date = new Date();
-        presetName = `${date.getDate()}.${date.getMonth()}.${date.getFullYear()}-${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+        presetName = `${date.getDate()}.${addZero(date.getMonth())}.${date.getFullYear()}-${addZero(date.getHours())}:${addZero(date.getMinutes())}:${addZero(date.getSeconds())}`;
+    }
+
+    function addZero(elem) {
+        if (elem < 10) {
+            return '0' + elem;
+        }
+        return elem;
     }
 
     function closeModal() {
