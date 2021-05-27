@@ -297,15 +297,18 @@ window.onload = function () {
     let clearTextButton = document.querySelector('.text__delete');
     let missingTextModal = document.querySelector('.missing-text');
     let missingTextBtn = document.querySelector('.missing-text__button');
+    let colorInput = document.querySelector('.text__color');
 
     class TextLabel {
         createTextModal() {
             this.text = textInput.value;
+            this.color = colorInput.value;
 
             let textElement = document.createElement('div');
             textElement.classList.add('photo__text');
             textElement.setAttribute('draggable', true);
             textElement.textContent = this.text;
+            textElement.style.color = this.color;
             canvasContainer.appendChild(textElement);
     
             let buttonDeleteText = document.createElement('button');
@@ -332,9 +335,10 @@ window.onload = function () {
         let element = event.target.closest('div');
         let elementWidth = event.pageX - element.offsetWidth / 2 + 20;
         let elementHeight = event.pageY - element.offsetHeight + 10;
+        let textColor = colorInput.value;
 
         ctx.font = 'bold 20px Roboto';
-        ctx.fillStyle = '#000000';
+        ctx.fillStyle = textColor;
         ctx.textAlign = 'center';
         ctx.fillText(textInput.value, elementWidth, elementHeight);
 
