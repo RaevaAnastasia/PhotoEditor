@@ -1,0 +1,16 @@
+.missing-text {
+    display: none;
+
+    &--show {
+        display: block;
+    }
+
+    &__text {
+        margin-bottom: 1rem;
+    }
+
+    &__button {
+        display: block;
+        margin: 0 auto;
+    }
+}

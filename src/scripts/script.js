@@ -295,6 +295,8 @@ window.onload = function () {
     let textInput = document.querySelector('.text__input');
     let textAddButton = document.querySelector('.text__add');
     let clearTextButton = document.querySelector('.text__delete');
+    let missingTextModal = document.querySelector('.missing-text');
+    let missingTextBtn = document.querySelector('.missing-text__button');
 
     class TextLabel {
         createTextModal() {
@@ -383,12 +385,23 @@ window.onload = function () {
     }
     
     function initTextLabel() {
-        new TextLabel().createTextModal();
-        addListenerToDeleteBtn();
-        addListenerToAddTextButton();
-        addListenerToMove();
+        if (textInput.value == '') {
+            missingTextModal.classList.add('missing-text--show');
+            overlay.classList.add('pop-up__overlay--show');
+        } else {
+            new TextLabel().createTextModal();
+            addListenerToDeleteBtn();
+            addListenerToAddTextButton();
+            addListenerToMove();
+        }
     }
 
+    function closeMissingTextModal() {
+        missingTextModal.classList.remove('missing-text--show');
+        overlay.classList.remove('pop-up__overlay--show');
+    }
+
+    missingTextBtn.addEventListener('click', closeMissingTextModal);
     textAddButton.addEventListener('click', initTextLabel);
     clearTextButton.addEventListener('click', drawImage);
 };
