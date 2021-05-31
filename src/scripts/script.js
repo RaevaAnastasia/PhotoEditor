@@ -17,8 +17,9 @@ window.onload = function () {
 
     function getAllPresets() {
         presetsContent = '';
+        let template = /preset\w/;
         for (let item in localStorage) {
-            if (localStorage.hasOwnProperty(item) && item.indexOf('preset') == 0) {
+            if (localStorage.hasOwnProperty(item) && template.test(item)) {
                 let itemForDataSet = item.split(' ').join('_');
                 item = item.slice(6);
                 let itemContent = `<li class="presets__item">
