@@ -29,7 +29,7 @@
         // }
     }
 
-    &__text {
+    &__modal {
         border: 1px dashed black;
         padding: 2rem;
         padding-top: 4rem;
@@ -46,7 +46,7 @@
         cursor: move;  
     }
 
-    &__delete-text {
+    &__delete-modal {
         background-image: url("../img/delete.svg");
         background-repeat: no-repeat;
         background-position: center;
@@ -58,7 +58,12 @@
         right: 0.5rem;
     }
 
-    &__add-text {
+    &__add-modal {
         margin-top: 1rem;
+    }
+
+    &__sticker {
+        width: 20rem;
+        object-fit: contain;
     }
 }

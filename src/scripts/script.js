@@ -299,35 +299,36 @@ window.onload = function () {
     let missingTextBtn = document.querySelector('.missing-text__button');
     let colorInput = document.querySelector('.text__color');
 
-    class TextLabel {
+    class TextModal {
         createTextModal() {
             this.text = textInput.value;
             this.color = colorInput.value;
 
             let textElement = document.createElement('div');
-            textElement.classList.add('photo__text');
+            textElement.classList.add('photo__modal');
             textElement.setAttribute('draggable', true);
             textElement.textContent = this.text;
             textElement.style.color = this.color;
             canvasContainer.appendChild(textElement);
     
-            let buttonDeleteText = document.createElement('button');
-            buttonDeleteText.setAttribute('type', 'button');
-            buttonDeleteText.classList.add('button');
-            buttonDeleteText.classList.add('photo__delete-text');
-            textElement.appendChild(buttonDeleteText);
+            let buttonDeleteModal = document.createElement('button');
+            buttonDeleteModal.setAttribute('type', 'button');
+            buttonDeleteModal.classList.add('button');
+            buttonDeleteModal.classList.add('photo__delete-modal');
+            textElement.appendChild(buttonDeleteModal);
     
-            let buttonAddTextHere = document.createElement('button');
-            buttonAddTextHere.setAttribute('type', 'button');
-            buttonAddTextHere.textContent = 'Добавить текст сюда';
-            buttonAddTextHere.classList.add('button');
-            buttonAddTextHere.classList.add('photo__add-text');
-            textElement.appendChild(buttonAddTextHere);
+            let buttonAddHere = document.createElement('button');
+            buttonAddHere.setAttribute('type', 'button');
+            buttonAddHere.textContent = 'Добавить текст сюда';
+            buttonAddHere.classList.add('button');
+            buttonAddHere.classList.add('photo__add-modal');
+            textElement.appendChild(buttonAddHere);
         }
     }
-    function deleteText(event) {
-        let textToDelete = event.target.closest(`div`);
-        textToDelete.parentNode.removeChild(textToDelete);
+
+    function deleteModal(event) {
+        let modalToDelete = event.target.closest(`div`);
+        modalToDelete.parentNode.removeChild(modalToDelete);
         textInput.value = '';
     }
     
@@ -342,22 +343,23 @@ window.onload = function () {
         ctx.textAlign = 'center';
         ctx.fillText(textInput.value, elementWidth, elementHeight);
 
-        deleteText(event);
+        deleteModal(event);
+        textInput.value = '';
     } 
 
     function addListenerToDeleteBtn() {
-        let deleteTextBtns = document.querySelectorAll('.photo__delete-text');
-        deleteTextBtns.forEach(item => item.addEventListener('click', deleteText));
+        let deleteModalBtns = document.querySelectorAll('.photo__delete-modal');
+        deleteModalBtns.forEach(item => item.addEventListener('click', deleteModal));
     }
 
-    function addListenerToAddTextButton() {
-        let addTextBtns = document.querySelectorAll('.photo__add-text');
-        addTextBtns.forEach(item => item.addEventListener('click', applyText));
+    function addListenerToAddButton(func) {
+        let addModalBtns = document.querySelectorAll('.photo__add-modal');
+        addModalBtns.forEach(item => item.addEventListener('click', func));
     }
 
     function addListenerToMove() {
-        let textElements = document.querySelectorAll('.photo__text');
-        textElements.forEach(item => item.addEventListener('mousedown', MoveElement));
+        let modalElements = document.querySelectorAll('.photo__modal');
+        modalElements.forEach(item => item.addEventListener('mousedown', MoveElement));
     }
 
     function MoveElement(event) {
@@ -388,14 +390,14 @@ window.onload = function () {
         element.addEventListener('mouseout', deleteListeners);
     }
     
-    function initTextLabel() {
+    function initTextModal() {
         if (textInput.value == '') {
             missingTextModal.classList.add('missing-text--show');
             overlay.classList.add('pop-up__overlay--show');
         } else {
-            new TextLabel().createTextModal();
+            new TextModal().createTextModal();
             addListenerToDeleteBtn();
-            addListenerToAddTextButton();
+            addListenerToAddButton(applyText);
             addListenerToMove();
         }
     }
@@ -406,6 +408,95 @@ window.onload = function () {
     }
 
     missingTextBtn.addEventListener('click', closeMissingTextModal);
-    textAddButton.addEventListener('click', initTextLabel);
+    textAddButton.addEventListener('click', initTextModal);
     clearTextButton.addEventListener('click', drawImage);
+
+    //Стикеры
+    const stickersContainer = document.querySelector('.stickers__list');
+    let url = 'stickers.json';
+
+    class Sticker {
+        constructor (url, id) {
+            this.url = url;
+            this.id = id;
+        }
+
+        createSticker() {
+            let item = document.createElement('li');
+            item.classList.add('stickers__item');
+            item.dataset.name = this.id;
+
+            let image = document.createElement('img');
+            image.setAttribute('src', this.url);
+            item.appendChild(image);
+
+            stickersContainer.appendChild(item);
+        }
+    }
+
+    function fillStickersList(data) {
+        for (let item in data) {
+            let sticker = new Sticker(data[item].url, data[item].id);
+            sticker.createSticker();
+        }
+    }
+
+    class StickerModal {
+        constructor(event) {
+            this.src = event.target.src;
+        }
+        
+        createStickerModal() {
+
+            let stickerElement = document.createElement('div');
+            stickerElement.classList.add('photo__modal');
+            stickerElement.setAttribute('draggable', true);
+            canvasContainer.appendChild(stickerElement);
+
+            let stickerImage = document.createElement('img');
+            stickerImage.setAttribute('src', this.src);
+            stickerImage.classList.add('photo__sticker');
+            stickerElement.appendChild(stickerImage);
+    
+            let buttonDeleteModal = document.createElement('button');
+            buttonDeleteModal.setAttribute('type', 'button');
+            buttonDeleteModal.classList.add('button');
+            buttonDeleteModal.classList.add('photo__delete-modal');
+            stickerElement.appendChild(buttonDeleteModal);
+    
+            let buttonAddHere = document.createElement('button');
+            buttonAddHere.setAttribute('type', 'button');
+            buttonAddHere.textContent = 'Добавить сюда';
+            buttonAddHere.classList.add('button');
+            buttonAddHere.classList.add('photo__add-modal');
+            stickerElement.appendChild(buttonAddHere);
+        }
+    }
+
+    function applySticker(event) {
+        let element = event.target.closest('div');
+        let img = element.querySelector('.photo__sticker');
+        let elementWidth = event.pageX - element.offsetWidth / 2 + 20;
+        let elementHeight = event.pageY - element.offsetHeight + 10;
+
+        ctx.drawImage(img, elementWidth, elementHeight, 200, 200 * img.height / img.width);
+
+        deleteModal(event);
+    }
+
+    function initStickerModal(event) {
+        new StickerModal(event).createStickerModal();
+        addListenerToDeleteBtn();
+        addListenerToAddButton(applySticker);
+        addListenerToMove();
+    }
+
+    fetch(url)
+        .then(result => result.json())
+        .then(obj => {
+            const stickersData = obj;
+            fillStickersList(stickersData);
+            const stickersElems = document.querySelectorAll('.stickers__item');
+            stickersElems.forEach(item => item.addEventListener('click', initStickerModal));
+        });
 };

@@ -16,6 +16,10 @@ const stylesFiles = [
    './src/style/**/*.scss'
 ];
 
+const JSONFiles = [
+   './src/**/*.json'
+];
+
 const jsFiles = [
    './src/scripts/**/*.js',
 ];
@@ -78,6 +82,11 @@ function minimg() {
       .pipe(gulp.dest('./build/img'));
 }
 
+function json() {
+   return gulp.src(JSONFiles)
+      .pipe(gulp.dest('./build'));
+}
+
 function clean() {
    return del(['build/css/**/*.css']);
 }
@@ -101,5 +110,5 @@ exports.scripts = scripts;
 exports.delcss = clean;
 exports.html = minhtml;
 exports.watch = watch;
-exports.build = gulp.series(clean, gulp.parallel(minhtml, styles, scripts, minimg));
+exports.build = gulp.series(clean, gulp.parallel(minhtml, styles, scripts, minimg, json));
 exports.dev = gulp.series(exports.build, watch);
