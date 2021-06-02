@@ -500,4 +500,49 @@ window.onload = function () {
             const stickersElems = document.querySelectorAll('.stickers__item');
             stickersElems.forEach(item => item.addEventListener('click', initStickerModal));
         });
+
+    //Поворот изображения
+    const rotateLeftBtn = document.querySelector('.rotate__button--left');
+    const rotateRightBtn = document.querySelector('.rotate__button--right');
+    const rotateRoundBtn = document.querySelector('.rotate__button--down');
+    let angleSum = 0;
+
+    function rotateImage(event) {
+        let angle = event.target.dataset.name == 'left' ? -90 : 90;
+        let ratio = photoToEdit.width / photoToEdit.height;
+        canvas.height = canvas.width * ratio;
+
+        let x = event.target.dataset.name == 'left' ? 0 : canvas.width;
+        let y = event.target.dataset.name == 'left' ? canvas.height : 0;
+        ctx.clearRect(0, 0, canvas.width, canvas.height); 
+        canvas.height = canvas.width * ratio;
+        ctx.translate(x, y);
+        ctx.rotate((Math.PI / 180) * angle);
+        ctx.drawImage(photoToEdit, 0, 0, canvas.height, canvas.height * photoToEdit.height / photoToEdit.width);
+    }
+
+    function rotateRound() {
+        let angle = 180;
+        let x = 0;
+        let y = 0;
+        
+        setCanvasParam();
+        angleSum += angle;
+        
+        if (angleSum % 360 !== 0) {
+            x = canvas.width;
+            y = canvas.height;
+        }
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height); 
+        ctx.translate(x, y);
+
+        ctx.rotate((Math.PI / 180) * angleSum);
+        drawImage();
+    }
+
+
+    rotateRoundBtn.addEventListener('click', rotateRound);
+    rotateLeftBtn.addEventListener('click', rotateImage);
+    rotateRightBtn.addEventListener('click', rotateImage);
 };
