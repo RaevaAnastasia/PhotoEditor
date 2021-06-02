@@ -1,6 +1,10 @@
 .photo {
     width: 50%;
     margin-right: 2rem;
+    position: sticky;
+    top: 2rem;
+    height: 100vh;
+    overflow: scroll;
 
     @media screen and (max-width: 1000px) {
         width: 100%;
@@ -9,24 +13,7 @@
     &__dropbox {
         border: 1px dashed #000000;
         position: relative;
-        overflow: hidden;
-
-        // &:hover::after {
-        //     display: block;
-        // }
-
-        // &::after {
-        //     display: none;
-        //     content: "";
-        //     position: absolute;
-        //     width: 15rem;
-        //     height: 15rem;
-        //     top: 40%;
-        //     left: 50%;
-        //     background-image: url('../img/dragdrop.svg');
-        //     background-repeat: no-repeat;
-        //     opacity: 0.5;
-        // }
+        overflow: scroll;
     }
 
     &__modal {
