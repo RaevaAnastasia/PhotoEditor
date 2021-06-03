@@ -276,6 +276,7 @@ window.onload = function () {
     
             ctx.filter = filters;
             drawImage();
+            ctx.save();
         
             if (textInput.value) {
                 applyText();
@@ -343,6 +344,7 @@ window.onload = function () {
         ctx.fillStyle = textColor;
         ctx.textAlign = 'center';
         ctx.fillText(textInput.value, elementWidth, elementHeight);
+        ctx.save();
 
         deleteModal(event);
         textInput.value = '';
@@ -481,7 +483,7 @@ window.onload = function () {
         let elementHeight = event.pageY - element.offsetHeight + 10;
 
         ctx.drawImage(img, elementWidth, elementHeight, 200, 200 * img.height / img.width);
-
+        ctx.save();
         deleteModal(event);
     }
 
@@ -519,6 +521,7 @@ window.onload = function () {
         ctx.translate(x, y);
         ctx.rotate((Math.PI / 180) * angle);
         ctx.drawImage(photoToEdit, 0, 0, canvas.height, canvas.height * photoToEdit.height / photoToEdit.width);
+        ctx.save();
     }
 
     function rotateRound() {
@@ -539,6 +542,7 @@ window.onload = function () {
 
         ctx.rotate((Math.PI / 180) * angleSum);
         drawImage();
+        ctx.save();
     }
 
 
