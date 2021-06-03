@@ -140,10 +140,6 @@ window.onload = function () {
         tunes.forEach((value, key) => filters += ` ${key}(${value})`);
         ctx.filter = filters;
         drawImage();
-
-        if (textInput.value) {
-            applyText();
-        }
     }
 
     function setInitialValue(range) {
@@ -218,7 +214,7 @@ window.onload = function () {
 
     function setDefaultName() {
         let date = new Date();
-        presetName = `${date.getDate()}.${addZero(date.getMonth())}.${date.getFullYear()}-${addZero(date.getHours())}:${addZero(date.getMinutes())}:${addZero(date.getSeconds())}`;
+        presetName = `${addZero(date.getDate())}.${addZero(date.getMonth())}.${date.getFullYear()}-${addZero(date.getHours())}:${addZero(date.getMinutes())}:${addZero(date.getSeconds())}`;
     }
 
     function addZero(elem) {
@@ -263,6 +259,26 @@ window.onload = function () {
     addPresetButton.addEventListener('click', checkShowModal);
 
     //Применение пресета к фото 
+
+    function setFilterRanges(filters) {
+        let filtersArray = filters.split(' ');
+        ranges.forEach(item => {
+            for (let filter of filtersArray) {
+                if (filter.indexOf(item.id) !== -1) {
+                    let nameLength = item.id.length;
+                    let filterName = filter.slice(0, nameLength);
+                    let value = filter.slice(nameLength + 1, -1);
+                    item.value = parseInt(value);
+                    
+                    if (tunes.has(filterName)) {
+                        tunes.delete(filterName);
+                    }
+            
+                    tunes.set(filterName, item.value);
+                }
+            }
+        });
+    }
     
     function applyPreset(event) {
         if (event.target.dataset.name) {
@@ -276,11 +292,7 @@ window.onload = function () {
     
             ctx.filter = filters;
             drawImage();
-            ctx.save();
-        
-            if (textInput.value) {
-                applyText();
-            }
+            setFilterRanges(filters);
         }
     }
 
