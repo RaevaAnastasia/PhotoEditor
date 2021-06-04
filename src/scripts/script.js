@@ -113,12 +113,7 @@ window.onload = function () {
     let ranges = document.querySelectorAll('.tune__range');
     let tunes = new Map();
 
-    function handleRangeChange (event) {
-        let range = event.target;
-        let rangeName = range.name;
-        let rangeValue = range.value;
-        let filters = "";
-        
+    function addUnits(rangeName, rangeValue) {
         switch(rangeName) {
             case 'blur':
                 rangeValue = rangeValue + 'px';
@@ -136,6 +131,15 @@ window.onload = function () {
                 rangeValue = rangeValue + '%';
                 break;
         }
+
+        return rangeValue;
+    }
+
+    function handleRangeChange (event) {
+        let range = event.target;
+        let rangeName = range.name;
+        let filters = "";
+        let rangeValue = addUnits(rangeName, range.value);
 
         if (tunes.has(rangeName)) {
             tunes.delete(rangeName);
@@ -272,14 +276,15 @@ window.onload = function () {
                 if (filter.indexOf(item.id) !== -1) {
                     let nameLength = item.id.length;
                     let filterName = filter.slice(0, nameLength);
-                    let value = filter.slice(nameLength + 1, -1);
-                    item.value = parseInt(value);
+                    let value = parseInt(filter.slice(nameLength + 1, -1));
+                    item.value = value;
                     
                     if (tunes.has(filterName)) {
                         tunes.delete(filterName);
                     }
-            
-                    tunes.set(filterName, item.value);
+
+                    value = addUnits(filterName, value);
+                    tunes.set(filterName, value);
                 }
             }
         });
