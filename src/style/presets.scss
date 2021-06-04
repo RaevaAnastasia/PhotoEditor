@@ -33,11 +33,18 @@
         border-radius: 4px;
         text-align: center;
         margin-bottom: 1rem;
-        cursor: pointer;
     }
 
     &__name {
         margin-bottom: 1rem;
         font-weight: bold;
+        cursor: pointer;
+    }
+
+    &__image {
+        width: 6rem;
+        margin-bottom: 1rem;
+        align-self: center;
+        cursor: pointer;
     }
 }

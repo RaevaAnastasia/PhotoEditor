@@ -15,6 +15,22 @@ window.onload = function () {
         presetsList.forEach(item => item.addEventListener('click', applyPreset));
     }
 
+
+    function applyPresetToPreview() {
+        let previews = document.querySelectorAll('.presets__image');
+        previews.forEach(preview => {
+            let presetToUse = preview.dataset.name.split('_').join(' ');
+            let presetData = JSON.parse(localStorage.getItem(presetToUse));
+            let filters = '';
+    
+            for (let item in presetData) {
+                filters += ` ${item}(${presetData[item]})`;
+            }
+
+            preview.style.filter = filters;
+        });
+    }
+
     function getAllPresets() {
         presetsContent = '';
         let template = /preset\w/;
@@ -24,6 +40,7 @@ window.onload = function () {
                 item = item.slice(6);
                 let itemContent = `<li class="presets__item">
                     <span class="presets__name" data-name=${itemForDataSet}> ${item} </span>
+                    <img class="presets__image" src="img/preset.jpg" alt="Rainbow Image" data-name=${itemForDataSet}>
                     <button class ="preset__delete button" type="button" data-name=${itemForDataSet}>Удалить пресет</button>
                 </li>`;
                 presetsContent += itemContent;
@@ -32,6 +49,7 @@ window.onload = function () {
         presets.innerHTML = presetsContent;
         addListenerToDeleteButton();
         addListenerToPreset();
+        applyPresetToPreview();
     }
     
     getAllPresets();
