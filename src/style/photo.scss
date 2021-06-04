@@ -7,9 +7,15 @@
     }
 
     &__dropbox {
-        border: 1px dashed #000000;
         position: relative;
-        overflow: scroll;
+        overflow: hidden;
+        display: flex;
+    }
+    
+    &__canvas {
+        border: 1px dashed #000000;
+        margin: 0 auto;
+        overflow: hidden;
     }
 
     &__modal {

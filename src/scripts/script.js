@@ -43,9 +43,14 @@ window.onload = function () {
     let ctx = canvas.getContext('2d');
 
     function setCanvasParam()  {
-        let width = canvasContainer.offsetWidth;
         let ratio = photoToEdit.height / photoToEdit.width;
-        let height = width * ratio;
+        let height = document.documentElement.clientHeight;
+        let width = height / ratio;
+        if (width > canvasContainer.offsetWidth) {
+            width = canvasContainer.offsetWidth;
+            height = width * ratio;
+        }
+
         canvas.width = width;
         canvas.height = height;
     }
