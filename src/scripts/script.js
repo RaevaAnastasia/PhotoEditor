@@ -1,6 +1,10 @@
 "use strict";
 
 window.onload = function () {
+    //Создаем хранилище состояния 
+    let state = new Map();
+    state.set('isRotateSide', false);
+
     //Показываем пресеты из Local Storage на странице
     let presets = document.querySelector('.presets__list');
     let presetsContent = '';
@@ -74,7 +78,14 @@ window.onload = function () {
     }
 
     function drawImage() {
-        ctx.drawImage(photoToEdit, 0, 0, canvas.width, canvas.width * photoToEdit.height / photoToEdit.width);
+        if (state.has('filters')) {
+            ctx.filter = state.get('filters');
+        }
+        if (state.get('isRotateSide')) {
+            ctx.drawImage(photoToEdit, 0, 0, canvas.height, canvas.height * photoToEdit.height / photoToEdit.width);
+        } else {
+            ctx.drawImage(photoToEdit, 0, 0, canvas.width, canvas.width * photoToEdit.height / photoToEdit.width);
+        }
     }
 
     function redrawCanvas() {
@@ -166,6 +177,7 @@ window.onload = function () {
         tunes.set(rangeName, rangeValue);
         tunes.forEach((value, key) => filters += ` ${key}(${value})`);
         ctx.filter = filters;
+        state.set('filters', filters);
         drawImage();
     }
 
@@ -200,6 +212,7 @@ window.onload = function () {
     let resetButton = document.querySelector('.buttons__reset');
 
     function resetAllFilters() {
+        state.clear();
         ctx.filter = 'none';
         drawImage();
         ranges.forEach((range) => setInitialValue(range));
@@ -319,6 +332,7 @@ window.onload = function () {
             }
     
             ctx.filter = filters;
+            state.set('filters', filters);
             drawImage();
             setFilterRanges(filters);
         }
@@ -550,21 +564,26 @@ window.onload = function () {
     let angleSum = 0;
 
     function rotateImage(event) {
+        state.set('isRotateSide', true);
         let angle = event.target.dataset.name == 'left' ? -90 : 90;
         let ratio = photoToEdit.width / photoToEdit.height;
+        ctx.clearRect(0, 0, canvas.width, canvas.height); 
+        canvas.width = canvasContainer.offsetWidth;
         canvas.height = canvas.width * ratio;
+        if (canvas.height > document.documentElement.clientHeight) {
+            canvas.height = document.documentElement.clientHeight;
+            canvas.width = canvas.height / ratio;
+        }
 
         let x = event.target.dataset.name == 'left' ? 0 : canvas.width;
         let y = event.target.dataset.name == 'left' ? canvas.height : 0;
-        ctx.clearRect(0, 0, canvas.width, canvas.height); 
-        canvas.height = canvas.width * ratio;
         ctx.translate(x, y);
         ctx.rotate((Math.PI / 180) * angle);
-        ctx.drawImage(photoToEdit, 0, 0, canvas.height, canvas.height * photoToEdit.height / photoToEdit.width);
-        ctx.save();
+        drawImage();
     }
 
     function rotateRound() {
+        state.set('isRotateSide', false);
         let angle = 180;
         let x = 0;
         let y = 0;
@@ -582,7 +601,6 @@ window.onload = function () {
 
         ctx.rotate((Math.PI / 180) * angleSum);
         drawImage();
-        ctx.save();
     }
 
 
