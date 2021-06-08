@@ -397,8 +397,8 @@ window.onload = function () {
         ctx.font = 'bold 20px Roboto';
         ctx.fillStyle = textColor;
         ctx.textAlign = 'center';
+        ctx.filter = 'none';
         ctx.fillText(textInput.value, elementWidth, elementHeight);
-        ctx.save();
 
         deleteModal(event);
         textInput.value = '';
@@ -536,8 +536,8 @@ window.onload = function () {
         let elementWidth = event.pageX - element.offsetWidth / 2 + 20;
         let elementHeight = event.pageY - element.offsetHeight + 10;
 
+        ctx.filter = 'none';
         ctx.drawImage(img, elementWidth, elementHeight, 200, 200 * img.height / img.width);
-        ctx.save();
         deleteModal(event);
     }
 

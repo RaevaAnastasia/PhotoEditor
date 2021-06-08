@@ -9,11 +9,15 @@
     }
 
     &__add {
-        width: 60%;
-        margin-bottom: 1rem;
+        width: 45%;
     }
 
     &__delete {
-        width: 60%;
+        width: 45%;
+    }
+
+    &__wrap {
+        display:flex;
+        justify-content:space-around;
     }
 }
