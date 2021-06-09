@@ -12,10 +12,14 @@
         display: flex;
     }
     
+    &__wrap {
+        position: relative;
+        overflow: hidden;
+        margin: 0 auto;
+    }
+
     &__canvas {
         border: 1px dashed #000000;
-        margin: 0 auto;
-        overflow: hidden;
     }
 
     &__modal {
@@ -23,7 +27,7 @@
         padding: 2rem;
         padding-top: 4rem;
         position: absolute;
-        left: 10%;
+        left: 30%;
         top: 50%;
         background-color: rgba(255, 255, 255, 0.6);
         font-weight: bold;

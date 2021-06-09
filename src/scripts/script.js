@@ -59,8 +59,9 @@ window.onload = function () {
     getAllPresets();
 
     //Создание холста с изображением по умолчанию
+    let dropbox = document.querySelector('.photo__dropbox');
     let photoToEdit = document.querySelector('.photo__img');
-    let canvasContainer = document.querySelector('.photo__dropbox');
+    let canvasContainer = document.querySelector('.photo__wrap');
     let canvas = document.querySelector('#canvas');
     let ctx = canvas.getContext('2d');
 
@@ -68,8 +69,8 @@ window.onload = function () {
         let ratio = photoToEdit.height / photoToEdit.width;
         let height = document.documentElement.clientHeight;
         let width = height / ratio;
-        if (width > canvasContainer.offsetWidth) {
-            width = canvasContainer.offsetWidth;
+        if (width > dropbox.offsetWidth) {
+            width = dropbox.offsetWidth;
             height = width * ratio;
         }
 
@@ -86,6 +87,22 @@ window.onload = function () {
         } else {
             ctx.drawImage(photoToEdit, 0, 0, canvas.width, canvas.width * photoToEdit.height / photoToEdit.width);
         }
+
+        for (let key of state.keys()) {
+            if (key.match(/sticker-\w/g)) {
+                let data = state.get(key);
+                ctx.filter = 'none';
+                ctx.drawImage(data[0], data[1], data[2], data[3], data[4]);
+            }
+            if ((key.match(/text\w/g))) {
+                let data = state.get(key);
+                ctx.font = 'bold 20px Roboto';
+                ctx.fillStyle = `${data[3]}`;
+                ctx.textAlign = 'center';
+                ctx.filter = 'none';
+                ctx.fillText(data[0], data[1], data[2]);
+            }
+        }
     }
 
     function redrawCanvas() {
@@ -99,7 +116,6 @@ window.onload = function () {
 
     //Загрузка файла
     let newPhoto  = document.querySelector('#newPhoto');
-    let dropbox = document.querySelector('.photo__dropbox');
 
     function changePhotoURl(file) {
         let fileURL = window.URL.createObjectURL(file);
@@ -212,7 +228,9 @@ window.onload = function () {
     let resetButton = document.querySelector('.buttons__reset');
 
     function resetAllFilters() {
+        let isRotate = state.get('isRotateSide');
         state.clear();
+        state.set('isRotateSide', isRotate);
         ctx.filter = 'none';
         drawImage();
         ranges.forEach((range) => setInitialValue(range));
@@ -390,16 +408,15 @@ window.onload = function () {
     
     function applyText(event) {
         let element = event.target.closest('div');
-        let elementWidth = event.pageX - element.offsetWidth / 2 + 20;
-        let elementHeight = event.pageY - element.offsetHeight + 10;
+        let elementWidth = event.pageX - element.offsetWidth;
+        let elementHeight = event.pageY - element.offsetHeight;
         let textColor = colorInput.value;
-
         ctx.font = 'bold 20px Roboto';
         ctx.fillStyle = textColor;
         ctx.textAlign = 'center';
         ctx.filter = 'none';
         ctx.fillText(textInput.value, elementWidth, elementHeight);
-
+        state.set(`text${textInput.value}`, [textInput.value, elementWidth, elementHeight, textColor]);
         deleteModal(event);
         textInput.value = '';
     } 
@@ -421,7 +438,7 @@ window.onload = function () {
 
     function MoveElement(event) {
         let element = event.target.closest('div');
-        let shiftX = event.clientX - element.getBoundingClientRect().left;
+        let shiftX = event.clientX - element.getBoundingClientRect().left / 2;
         let shiftY = event.clientY - element.getBoundingClientRect().top / 2;
 
         element.ondragstart = function() {
@@ -438,11 +455,11 @@ window.onload = function () {
         }
         
         function deleteListeners() {
-            dropbox.removeEventListener('mousemove',onMouseMove);
+            canvasContainer.removeEventListener('mousemove',onMouseMove);
             element.onmouseup = null;
         }
         
-        dropbox.addEventListener('mousemove', onMouseMove);
+        canvasContainer.addEventListener('mousemove', onMouseMove);
         element.addEventListener('mouseup', deleteListeners);
         element.addEventListener('mouseout', deleteListeners);
     }
@@ -533,11 +550,19 @@ window.onload = function () {
     function applySticker(event) {
         let element = event.target.closest('div');
         let img = element.querySelector('.photo__sticker');
-        let elementWidth = event.pageX - element.offsetWidth / 2 + 20;
-        let elementHeight = event.pageY - element.offsetHeight + 10;
+        let elementWidth = event.pageX - element.offsetWidth;
+        let elementHeight = event.pageY - element.offsetHeight;
+        let width = 200;
+        let height = 200 * img.height / img.width;
+        let stickerName = img.src.match(/sticker-\w/)[0];
+
+        if (elementWidth < 0) {
+            elementWidth = 0;
+        }
 
         ctx.filter = 'none';
-        ctx.drawImage(img, elementWidth, elementHeight, 200, 200 * img.height / img.width);
+        state.set(stickerName + elementWidth, [img, elementWidth, elementHeight, width, height]);
+        ctx.drawImage(img, elementWidth, elementHeight, width, height);
         deleteModal(event);
     }
 
@@ -568,7 +593,7 @@ window.onload = function () {
         let angle = event.target.dataset.name == 'left' ? -90 : 90;
         let ratio = photoToEdit.width / photoToEdit.height;
         ctx.clearRect(0, 0, canvas.width, canvas.height); 
-        canvas.width = canvasContainer.offsetWidth;
+        canvas.width = dropbox.offsetWidth;
         canvas.height = canvas.width * ratio;
         if (canvas.height > document.documentElement.clientHeight) {
             canvas.height = document.documentElement.clientHeight;

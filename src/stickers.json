@@ -10,5 +10,21 @@
     "item3": {
         "id": "3",
         "url": "img/sticker-3.png"
+    },
+    "item4": {
+        "id": "4",
+        "url": "img/sticker-4.png"
+    },
+    "item5": {
+        "id": "5",
+        "url": "img/sticker-5.png"
+    },
+    "item6": {
+        "id": "6",
+        "url": "img/sticker-6.png"
+    },
+    "item7": {
+        "id": "7",
+        "url": "img/sticker-7.png"
     }
 }
