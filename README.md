@@ -1,4 +1,6 @@
 # PhotoEditor - проект находится в разработке.
-"КАДР" - фоторедактор для ваших лучших кадров!
+## *"Cadr"* - фоторедактор твоих лучших кадров!
 
-Заходи посмотреть на текущее состояние: https://raevaanastasia.github.io/PhotoEditor/
+![](https://github.com/RaevaAnastasia/PhotoEditor/blob/main/readme_img.png)
+
+### Заходи посмотреть на текущее состояние: https://raevaanastasia.github.io/PhotoEditor/
