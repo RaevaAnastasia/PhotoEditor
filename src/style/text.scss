@@ -1,6 +1,7 @@
 .text {
     display: flex;
     flex-direction: column;
+    flex: 0 0 auto;
 
     &__input {
         padding: 1rem;
@@ -19,5 +20,7 @@
     &__wrap {
         display:flex;
         justify-content:space-around;
+        flex: 0 0 auto;
+        align-items: baseline;
     }
 }
