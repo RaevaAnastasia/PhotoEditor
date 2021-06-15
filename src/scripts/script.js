@@ -632,4 +632,85 @@ window.onload = function () {
     rotateRoundBtn.addEventListener('click', rotateRound);
     rotateLeftBtn.addEventListener('click', rotateImage);
     rotateRightBtn.addEventListener('click', rotateImage);
+
+    //Снимок с вебкамеры
+
+    //Если в браузере нет свойств navigator.mediaDevices и navigator.mediaDevices.getUserMedia, вернет false
+    function hasGetUserMedia() {
+        return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+    }
+    
+    if (hasGetUserMedia()) {
+        // Cоздаем кнопку для открытия модального окна с камерой
+        let sourceContainer = document.querySelector('.tools__download');
+        let buttonTakePhoto = document.createElement('button'); 
+        buttonTakePhoto.classList.add('tools__make-photo');
+        buttonTakePhoto.classList.add('button');
+        buttonTakePhoto.textContent = 'Сделать снимок с веб-камеры';
+        sourceContainer.appendChild(buttonTakePhoto);
+
+        //Помещаем в переменые необходимые DOM-элементы
+        const video = document.querySelector(".webcamera__video");
+        const openCameraButton = document.querySelector('.tools__make-photo');
+        const webcameraModal = document.querySelector('.webcamera');
+        const takePhotoButton = webcameraModal.querySelector('.webcamera__make-photo');
+        const closeWebCamera = webcameraModal.querySelector('.webcamera__close');
+
+        // Создаем объект параметров
+        const constraints = {
+            video: { width: canvas.width, height: canvas.height }
+        };
+
+        // В переменную track  сохраняется воспроизводимый трек - в нашем случае видео
+        let track;
+
+        //Запрашиваем разрешение на доступ к камере и при подтверждении открываем модальное окно и выводим видео с камеры
+        const openWebCamera = function() {
+            navigator.mediaDevices.getUserMedia(constraints)
+            .then((stream) => {
+                    webcameraModal.classList.add('webcamera--show'); // Показываем модальное окно
+                    video.srcObject = stream;
+                    video.setAttribute('width', canvas.width);
+                    video.setAttribute('height', canvas.height);
+                    track = stream.getTracks()[0];
+
+                    video.onloadedmetadata = function(e) {
+                        video.play();
+                    };
+                })
+                .catch(function(err) {
+                    console.log(err);
+                });
+        };
+
+        //Закрываем модальное окно и останавливаем видео-трек
+        const closeCameraModal = function() {
+            webcameraModal.classList.remove('webcamera--show');
+            track.stop();
+        };
+
+        //Закрываем модальное окно и отрисовываем видеокадр на canvas
+        const takePhoto = function() {
+            let width, height;
+            if (video.videoWidth > canvas.width) {
+                width = canvas.width;
+            } else {
+                width = video.videoWidth;
+            }
+
+            height = width * video.videoHeight / video.videoWidth;
+
+            closeCameraModal();
+            resetAllFilters();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            canvas.height = height;
+            ctx.drawImage(video, 0, 0, width, height);
+            photoToEdit.src = canvas.toDataURL("image/png"); 
+        };
+
+        //Навешиваем обработчики событий
+        openCameraButton.addEventListener('click', openWebCamera);
+        closeWebCamera.addEventListener('click', closeCameraModal);
+        takePhotoButton.addEventListener('click', takePhoto);
+    } 
 };
