@@ -96,7 +96,7 @@ window.onload = function () {
             }
             if ((key.match(/text\w/g))) {
                 let data = state.get(key);
-                ctx.font = 'bold 20px Roboto';
+                ctx.font = `bold ${data[4]}px Roboto`;
                 ctx.fillStyle = `${data[3]}`;
                 ctx.textAlign = 'center';
                 ctx.filter = 'none';
@@ -372,19 +372,26 @@ window.onload = function () {
     let missingTextModal = document.querySelector('.missing-text');
     let missingTextBtn = document.querySelector('.missing-text__button');
     let colorInput = document.querySelector('.text__color');
+    let textSize = document.querySelector('.text__size');
 
     class TextModal {
         createTextModal() {
             this.text = textInput.value;
             this.color = colorInput.value;
+            this.size = textSize.value;
 
             let textElement = document.createElement('div');
             textElement.classList.add('photo__modal');
             textElement.setAttribute('draggable', true);
-            textElement.textContent = this.text;
-            textElement.style.color = this.color;
             canvasContainer.appendChild(textElement);
-    
+
+            let textContent = document.createElement('div');
+            textContent.textContent = this.text;
+            textContent.style.color = this.color;
+            textContent.style.fontSize = `${this.size}px`;
+            textContent.style.lineHeight = `${this.size * 1.4}px`;
+            textElement.appendChild(textContent);
+
             let buttonDeleteModal = document.createElement('button');
             buttonDeleteModal.setAttribute('type', 'button');
             buttonDeleteModal.classList.add('button');
@@ -405,18 +412,46 @@ window.onload = function () {
         modalToDelete.parentNode.removeChild(modalToDelete);
         textInput.value = '';
     }
+
+    function wrapText(text, x, y) {
+        let maxWidth = canvas.width * 0.8;
+        let lineHeight = textSize.value * 1.4;
+        let words = text.split(' ');
+        let line = '';
+        
+        for(let i = 0; i < words.length; i++) {
+            let testLine = line + words[i] + ' ';
+            let metrics = ctx.measureText(testLine);
+            let testWidth = metrics.width;
+            if (testWidth > maxWidth && i > 0) {
+                ctx.fillText(line, x, y);
+                line = words[i] + ' ';
+                y += lineHeight;
+            }
+            else {
+                line = testLine;
+            }
+        }
+        ctx.fillText(line, x, y);
+    }
     
     function applyText(event) {
         let element = event.target.closest('div');
-        let elementWidth = event.pageX - element.offsetWidth;
-        let elementHeight = event.pageY - element.offsetHeight;
+        let textContent = element.querySelector('div');
+        console.log(textContent.getBoundingClientRect());
+        let textX = textContent.getBoundingClientRect().bottom - textContent.getBoundingClientRect().width + window.scrollX;
+        let textY = textContent.getBoundingClientRect().left + textContent.getBoundingClientRect().height + window.scrollY;
         let textColor = colorInput.value;
-        ctx.font = 'bold 20px Roboto';
+        let size = textSize.value;
+        ctx.font = `bold ${size}px Roboto`;
         ctx.fillStyle = textColor;
-        ctx.textAlign = 'center';
+        ctx.textAlign = 'left';
         ctx.filter = 'none';
-        ctx.fillText(textInput.value, elementWidth, elementHeight);
-        state.set(`text${textInput.value}`, [textInput.value, elementWidth, elementHeight, textColor]);
+
+
+        // ctx.fillText(textInput.value, elementWidth, elementHeight);
+        wrapText(textInput.value, textX, textY);
+        state.set(`text${textInput.value}`, [textInput.value, textX, textY, textColor, size]);
         deleteModal(event);
         textInput.value = '';
     } 
@@ -481,9 +516,18 @@ window.onload = function () {
         overlay.classList.remove('pop-up__overlay--show');
     }
 
+    function deleteText() {
+        for (let key of state.keys()) {
+            if ((key.match(/text\w/g))) {
+                state.delete(key);
+            }
+        }
+        drawImage();
+    }
+
     missingTextBtn.addEventListener('click', closeMissingTextModal);
     textAddButton.addEventListener('click', initTextModal);
-    clearTextButton.addEventListener('click', drawImage);
+    clearTextButton.addEventListener('click', deleteText);
 
     //Стикеры
     const stickersContainer = document.querySelector('.stickers__list');

@@ -5,7 +5,8 @@
         margin-bottom: 1rem;
     }
 
-    &__range {
+    &__range,
+    &__range--visual {
         background-color: transparent;
         -webkit-appearance: none;
         width: 50%;

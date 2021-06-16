@@ -27,14 +27,14 @@
         padding: 2rem;
         padding-top: 4rem;
         position: absolute;
-        left: 30%;
+        left: 10%;
         top: 50%;
         background-color: rgba(255, 255, 255, 0.6);
         font-weight: bold;
         font-size: 2rem;
         display: flex;
         flex-direction: column;
-        max-width: 80%;
+        width: 80%;
         word-wrap: break-word;  
         cursor: move;  
     }
@@ -52,7 +52,7 @@
     }
 
     &__add-modal {
-        margin-top: 1rem;
+        margin-top: 2rem;
     }
 
     &__sticker {
