@@ -531,6 +531,7 @@ window.onload = function () {
 
     //Стикеры
     const stickersContainer = document.querySelector('.stickers__list');
+    const stickersDeleteButton = document.querySelector('.stickers__delete');
     let url = 'stickers.json';
 
     class Sticker {
@@ -625,6 +626,17 @@ window.onload = function () {
             const stickersElems = document.querySelectorAll('.stickers__item');
             stickersElems.forEach(item => item.addEventListener('click', initStickerModal));
         });
+
+    function deleteStickers() {
+        for (let key of state.keys()) {
+            if ((key.match(/sticker-\w/g))) {
+                state.delete(key);
+            }
+        }
+        drawImage();
+    }
+
+    stickersDeleteButton.addEventListener('click', deleteStickers);
 
     //Поворот изображения
     const rotateLeftBtn = document.querySelector('.rotate__button--left');
@@ -757,4 +769,9 @@ window.onload = function () {
         closeWebCamera.addEventListener('click', closeCameraModal);
         takePhotoButton.addEventListener('click', takePhoto);
     } 
+
+    window.addEventListener('beforeunload', function(e) {
+        return true;
+    });
 };
+
