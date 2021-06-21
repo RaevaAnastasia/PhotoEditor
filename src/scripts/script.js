@@ -1,11 +1,15 @@
 "use strict";
 
 window.onload = function () {
+    //Данные фильтров
+    const filtersData = ['sepia(100%)', 'grayscale(100%)'];
+    const filtersNames = ['Сепия', 'Ч/Б'];
+
     //Создаем хранилище состояния 
     let state = new Map();
     state.set('isRotateSide', false);
     state.set('isMirror', false);
-
+    
     //Показываем пресеты из Local Storage на странице
     let presets = document.querySelector('.presets__list');
     let presetsContent = '';
@@ -19,7 +23,6 @@ window.onload = function () {
         let presetsList = document.querySelectorAll('.presets__item');
         presetsList.forEach(item => item.addEventListener('click', applyPreset));
     }
-
 
     function applyPresetToPreview() {
         let previews = document.querySelectorAll('.presets__image');
@@ -264,6 +267,43 @@ window.onload = function () {
     }
 
     saveButton.addEventListener('click', saveImage);
+
+    //Фильтры 
+    const filterContainer = document.querySelector('.filters');
+    let filtersContent = '';
+
+    function addListenerToFilters() {
+        let filterList = document.querySelectorAll('.filters__item');
+        filterList.forEach(item => item.addEventListener('click', applyFilter));
+    }
+
+    function applyFilterToPreview() {
+        let previews = document.querySelectorAll('.filters__image');
+        previews.forEach(preview => {
+            let filterToUse = preview.dataset.name;
+            console.log(filterToUse);
+            preview.style.filter = filterToUse;
+        });
+    }
+
+    function applyFilter(event) {
+        let filter = event.target.dataset.name;
+        ctx.filter = filter;
+        state.set('filters', filter);
+        drawImage();
+    }
+
+    filtersData.forEach(item => {
+        let itemContent = `<li class="presets__item filters__item" data-name=${item}>
+                <span class="presets__name" data-name=${item}> ${filtersNames[filtersData.indexOf(item)]} </span>
+                <img class="presets__image filters__image" src="img/preset.jpg" alt="Rainbow Image" data-name=${item}>
+            </li>`;
+        filtersContent += itemContent;
+    });
+
+    filterContainer.innerHTML = filtersContent;
+    addListenerToFilters();
+    applyFilterToPreview();
 
     //Сохранение кастомного пресета - сочетание фильтров
     let addPresetButton = document.querySelector('.presets__add-preset');
