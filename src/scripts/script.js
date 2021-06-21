@@ -4,6 +4,7 @@ window.onload = function () {
     //Создаем хранилище состояния 
     let state = new Map();
     state.set('isRotateSide', false);
+    state.set('isMirror', false);
 
     //Показываем пресеты из Local Storage на странице
     let presets = document.querySelector('.presets__list');
@@ -82,7 +83,16 @@ window.onload = function () {
         if (state.has('filters')) {
             ctx.filter = state.get('filters');
         }
+
+        if (state.get('isMirror')) {
+                ctx.translate(canvas.width, 0);
+                ctx.scale(-1, 1);
+        }
+
         if (state.get('isRotateSide')) {
+            if ((state.get('isMirror'))) {
+                ctx.translate(canvas.height / 2, 0);
+            } 
             ctx.drawImage(photoToEdit, 0, 0, canvas.height, canvas.height * photoToEdit.height / photoToEdit.width);
         } else {
             ctx.drawImage(photoToEdit, 0, 0, canvas.width, canvas.width * photoToEdit.height / photoToEdit.width);
@@ -94,7 +104,8 @@ window.onload = function () {
                 ctx.filter = 'none';
                 ctx.drawImage(data[0], data[1], data[2], data[3], data[4]);
             }
-            if ((key.match(/text\w/g))) {
+
+            if (key.match(/text\w/g)) {
                 let data = state.get(key);
                 ctx.font = `bold ${data[4]}px Roboto`;
                 ctx.fillStyle = `${data[3]}`;
@@ -228,11 +239,9 @@ window.onload = function () {
     let resetButton = document.querySelector('.buttons__reset');
 
     function resetAllFilters() {
-        let isRotate = state.get('isRotateSide');
         state.clear();
-        state.set('isRotateSide', isRotate);
         ctx.filter = 'none';
-        drawImage();
+        redrawCanvas();
         ranges.forEach((range) => setInitialValue(range));
         tunes.clear();
     }
@@ -438,7 +447,6 @@ window.onload = function () {
     function applyText(event) {
         let element = event.target.closest('div');
         let textContent = element.querySelector('div');
-        console.log(textContent.getBoundingClientRect());
         let textX = textContent.getBoundingClientRect().bottom - textContent.getBoundingClientRect().width + window.scrollX;
         let textY = textContent.getBoundingClientRect().left + textContent.getBoundingClientRect().height + window.scrollY;
         let textColor = colorInput.value;
@@ -447,7 +455,6 @@ window.onload = function () {
         ctx.fillStyle = textColor;
         ctx.textAlign = 'left';
         ctx.filter = 'none';
-
 
         // ctx.fillText(textInput.value, elementWidth, elementHeight);
         wrapText(textInput.value, textX, textY);
@@ -642,6 +649,7 @@ window.onload = function () {
     const rotateLeftBtn = document.querySelector('.rotate__button--left');
     const rotateRightBtn = document.querySelector('.rotate__button--right');
     const rotateRoundBtn = document.querySelector('.rotate__button--down');
+    const rotateMirrorBtn = document.querySelector('.rotate__button--mirror');
     let angleSum = 0;
 
     function rotateImage(event) {
@@ -684,10 +692,17 @@ window.onload = function () {
         drawImage();
     }
 
+    function mirrorImage() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        state.set('isMirror', true);
+        drawImage();
+        state.set('isMirror', false);
+    }
 
     rotateRoundBtn.addEventListener('click', rotateRound);
     rotateLeftBtn.addEventListener('click', rotateImage);
     rotateRightBtn.addEventListener('click', rotateImage);
+    rotateMirrorBtn.addEventListener('click', mirrorImage);
 
     //Снимок с вебкамеры
 
