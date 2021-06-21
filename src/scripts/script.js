@@ -249,10 +249,17 @@ window.onload = function () {
     resetButton.addEventListener('click', resetAllFilters);
 
     //Скачивание файла
-    let saveButton = document.querySelector('.buttons__save');
-
+    const saveButton = document.querySelector('.buttons__save');
+    
     function saveImage() {
-        let url = canvas.toDataURL('image/jpeg');
+        let formats = document.querySelectorAll('.format__radio');
+        let format;
+        formats.forEach(item => {
+            if (item.checked) {
+                format = `image/${item.id}`;
+            }
+        });
+        let url = canvas.toDataURL(format);
         saveButton.href = url;
     }
 

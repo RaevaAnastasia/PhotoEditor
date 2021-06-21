@@ -47,6 +47,7 @@
     }
 
     &__buttons {
+        flex-wrap: wrap;
         display: flex;
         align-items: baseline;
         flex: 0 0 auto;

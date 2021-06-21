@@ -1,0 +1,17 @@
+.format {
+    width: 100%;
+    display: flex;
+    margin: 1rem;
+
+    &__wrap {
+        margin-right: 1rem;
+    }
+
+    &__radio {
+        display: none;
+
+        &:checked + .format__label {
+            text-decoration: underline;
+        }
+    }
+}
