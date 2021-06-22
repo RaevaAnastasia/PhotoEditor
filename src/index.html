@@ -87,6 +87,19 @@
                         <button class="text__delete button">Удалить текст c изображения</button>
                     </p>                  
                 </div>
+                <div class="tools__paint paint">
+                    <h2 class="tools__subtitle">Рисование</h2>
+                    <p class="tools__item-wrap">
+                        <label class="paint__label" for="paint-color">Выберите цвет кисти</label>
+                        <input class="paint__color" type="color" name="paint-color" id="paint-color">
+                    </p> 
+                    <p class="tools__item-wrap">
+                        <label class="paint__label" for="paint-size">Выберите размер кисти</label>
+                        <input class="paint__size tune__range--visual" type="range" name="paint-size" id="paint-size" min="10" max="50" value="10">
+                    </p> 
+                    <button class="paint__add button">Рисовать</button>
+                    <button class="paint__delete button">Удалить рисунок</button>
+                </div>
                 <div class="tools__stickers stickers">
                     <h2 class="tools__subtitle">Стикеры</h2>
                     <ul class="stickers__list"></ul>

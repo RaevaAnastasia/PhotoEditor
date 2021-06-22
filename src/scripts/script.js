@@ -756,7 +756,7 @@ window.onload = function () {
     function hasGetUserMedia() {
         return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
     }
-    
+
     let isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent.toLowerCase());
 
     if (hasGetUserMedia() && !isSafari) {
@@ -836,5 +836,38 @@ window.onload = function () {
     window.addEventListener('beforeunload', function(e) {
         return true;
     });
+
+    //Рисование
+    const paintColor = document.querySelector('#paint-color');
+    const paintSize = document.querySelector('#paint-size');
+    const paintBtn = document.querySelector('.paint__add');
+    const paintDeleteBtn = document.querySelector('.paint__delete');
+
+    function draw(e) {
+        ctx.lineWidth = paintSize.value;
+        ctx.strokeStyle = paintColor.value;
+        ctx.lineCap = 'round';
+        ctx.filter = 'none';
+
+        let x = e.offsetX;
+        let y = e.offsetY;
+        let dx = e.movementX;
+        let dy = e.movementY;
+
+        if (e.buttons > 0) {
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x - dx, y - dy);
+            ctx.stroke();
+            ctx.closePath();
+        }
+    }
+    
+    paintBtn.addEventListener('click', () => canvas.addEventListener('mousemove', draw));
+    paintDeleteBtn.addEventListener('click', () => {
+        canvas.removeEventListener('mousemove', draw);
+        drawImage();
+    });
+    canvas.addEventListener('mouseleave', () => canvas.removeEventListener('mousemove', draw));
 };
 
