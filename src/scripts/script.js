@@ -281,7 +281,6 @@ window.onload = function () {
         let previews = document.querySelectorAll('.filters__image');
         previews.forEach(preview => {
             let filterToUse = preview.dataset.name;
-            console.log(filterToUse);
             preview.style.filter = filterToUse;
         });
     }
@@ -758,7 +757,9 @@ window.onload = function () {
         return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
     }
     
-    if (hasGetUserMedia()) {
+    let isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent.toLowerCase());
+
+    if (hasGetUserMedia() && !isSafari) {
         // Cоздаем кнопку для открытия модального окна с камерой
         let sourceContainer = document.querySelector('.tools__download');
         let buttonTakePhoto = document.createElement('button'); 
