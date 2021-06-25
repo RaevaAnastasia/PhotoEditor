@@ -9,5 +9,9 @@
         &:visited {
             color: #000000;
         }
+
+        @media screen and (max-width: 1100px) {
+            margin-bottom: 1rem;
+        }
     }
 }

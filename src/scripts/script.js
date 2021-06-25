@@ -70,9 +70,24 @@ window.onload = function () {
     let ctx = canvas.getContext('2d');
 
     function setCanvasParam()  {
-        let ratio = photoToEdit.height / photoToEdit.width;
         let height = document.documentElement.clientHeight;
+
+        function getRatio() {
+            photoToEdit.style.display = 'block'; 
+            let ratio;
+            if (photoToEdit.offsetWidth < photoToEdit.offsetHeight) {
+                ratio = photoToEdit.offsetWidth / photoToEdit.offsetHeight;
+            } else {
+                ratio = photoToEdit.offsetHeight / photoToEdit.offsetWidth;
+            }
+
+            photoToEdit.style.display = 'none';
+            return ratio;
+        }
+
+        let ratio = photoToEdit.height / photoToEdit.width || getRatio();
         let width = height / ratio;
+
         if (width > dropbox.offsetWidth) {
             width = dropbox.offsetWidth;
             height = width * ratio;
@@ -137,6 +152,7 @@ window.onload = function () {
         photoToEdit.onload = function() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             setCanvasParam();
+            drawImage();
             drawImage();
         };
         file.onload = function() {
@@ -820,9 +836,9 @@ window.onload = function () {
             height = width * video.videoHeight / video.videoWidth;
 
             closeCameraModal();
-            resetAllFilters();
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             canvas.height = height;
+            canvas.width = width;
             ctx.drawImage(video, 0, 0, width, height);
             photoToEdit.src = canvas.toDataURL("image/png"); 
         };
