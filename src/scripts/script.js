@@ -122,14 +122,16 @@ window.onload = function () {
                 ctx.filter = 'none';
                 ctx.drawImage(data[0], data[1], data[2], data[3], data[4]);
             }
+        }
 
+        for (let key of state.keys()) {
             if (key.match(/text\w/g)) {
                 let data = state.get(key);
                 ctx.font = `bold ${data[4]}px Roboto`;
                 ctx.fillStyle = `${data[3]}`;
-                ctx.textAlign = 'center';
+                ctx.textAlign = 'left';
                 ctx.filter = 'none';
-                ctx.fillText(data[0], data[1], data[2]);
+                wrapText(data[0], data[1], data[2]);
             }
         }
     }
@@ -452,6 +454,7 @@ window.onload = function () {
             this.size = textSize.value;
 
             let textElement = document.createElement('div');
+            textElement.style.minWidth = '12rem';
             textElement.classList.add('photo__modal');
             textElement.setAttribute('draggable', true);
             canvasContainer.appendChild(textElement);
@@ -471,7 +474,6 @@ window.onload = function () {
     
             let buttonAddHere = document.createElement('button');
             buttonAddHere.setAttribute('type', 'button');
-            buttonAddHere.textContent = 'Добавить текст сюда';
             buttonAddHere.classList.add('button');
             buttonAddHere.classList.add('photo__add-modal');
             textElement.appendChild(buttonAddHere);
@@ -509,18 +511,17 @@ window.onload = function () {
     function applyText(event) {
         let element = event.target.closest('div');
         let textContent = element.querySelector('div');
-        let textX = textContent.getBoundingClientRect().bottom - textContent.getBoundingClientRect().width + window.scrollX;
-        let textY = textContent.getBoundingClientRect().left + textContent.getBoundingClientRect().height + window.scrollY;
-        let textColor = colorInput.value;
         let size = textSize.value;
+        let textX = textContent.getBoundingClientRect().x - canvas.getBoundingClientRect().x;
+        let textY = textContent.getBoundingClientRect().y - canvas.getBoundingClientRect().y;
+        let textColor = colorInput.value;
+
         ctx.font = `bold ${size}px Roboto`;
         ctx.fillStyle = textColor;
         ctx.textAlign = 'left';
         ctx.filter = 'none';
-
-        // ctx.fillText(textInput.value, elementWidth, elementHeight);
         wrapText(textInput.value, textX, textY);
-        state.set(`text${textInput.value}`, [textInput.value, textX, textY, textColor, size]);
+        state.set(`text${textInput.value}`, [` ${textInput.value} `, textX, textY, textColor, size]);
         deleteModal(event);
         textInput.value = '';
     } 
