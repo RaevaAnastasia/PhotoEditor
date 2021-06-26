@@ -3,7 +3,7 @@
 window.onload = function () {
     //Данные фильтров
     const filtersData = ['sepia(100%)', 'grayscale(100%)'];
-    const filtersNames = ['Сепия', 'Ч/Б'];
+    const filtersNames = ['Сепия', 'Black&White'];
 
     //Создаем хранилище состояния 
     let state = new Map();
@@ -25,7 +25,7 @@ window.onload = function () {
     }
 
     function applyPresetToPreview() {
-        let previews = document.querySelectorAll('.presets__image');
+        let previews = document.querySelectorAll('.presets__image--custom');
         previews.forEach(preview => {
             let presetToUse = preview.dataset.name.split('_').join(' ');
             let presetData = JSON.parse(localStorage.getItem(presetToUse));
@@ -48,7 +48,7 @@ window.onload = function () {
                 item = item.slice(6);
                 let itemContent = `<li class="presets__item">
                     <span class="presets__name" data-name=${itemForDataSet}> ${item} </span>
-                    <img class="presets__image" src="img/preset.jpg" alt="Rainbow Image" data-name=${itemForDataSet}>
+                    <img class="presets__image presets__image--custom" src="img/preset.jpg" alt="Rainbow Image" data-name=${itemForDataSet}>
                     <button class ="preset__delete button" type="button" data-name=${itemForDataSet}>Удалить пресет</button>
                 </li>`;
                 presetsContent += itemContent;
@@ -521,7 +521,7 @@ window.onload = function () {
         ctx.textAlign = 'left';
         ctx.filter = 'none';
         wrapText(textInput.value, textX, textY);
-        state.set(`text${textInput.value}`, [` ${textInput.value} `, textX, textY, textColor, size]);
+        state.set(`text${textX}${textY}`, [`${textInput.value}`, textX, textY, textColor, size]);
         deleteModal(event);
         textInput.value = '';
     } 
@@ -636,7 +636,6 @@ window.onload = function () {
         }
         
         createStickerModal() {
-
             let stickerElement = document.createElement('div');
             stickerElement.classList.add('photo__modal');
             stickerElement.setAttribute('width', canvas.width * 0.8);
