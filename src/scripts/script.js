@@ -638,11 +638,13 @@ window.onload = function () {
 
             let stickerElement = document.createElement('div');
             stickerElement.classList.add('photo__modal');
+            stickerElement.setAttribute('width', canvas.width * 0.8);
             stickerElement.setAttribute('draggable', true);
             canvasContainer.appendChild(stickerElement);
 
             let stickerImage = document.createElement('img');
             stickerImage.setAttribute('src', this.src);
+            stickerImage.setAttribute('width', canvas.width * 0.4);
             stickerImage.classList.add('photo__sticker');
             stickerElement.appendChild(stickerImage);
     
@@ -654,7 +656,6 @@ window.onload = function () {
     
             let buttonAddHere = document.createElement('button');
             buttonAddHere.setAttribute('type', 'button');
-            buttonAddHere.textContent = 'Добавить сюда';
             buttonAddHere.classList.add('button');
             buttonAddHere.classList.add('photo__add-modal');
             stickerElement.appendChild(buttonAddHere);
@@ -664,19 +665,15 @@ window.onload = function () {
     function applySticker(event) {
         let element = event.target.closest('div');
         let img = element.querySelector('.photo__sticker');
-        let elementWidth = event.pageX - element.offsetWidth;
-        let elementHeight = event.pageY - element.offsetHeight;
-        let width = 200;
-        let height = 200 * img.height / img.width;
+        let imageX = img.getBoundingClientRect().x - canvas.getBoundingClientRect().x;
+        let imageY = img.getBoundingClientRect().y - canvas.getBoundingClientRect().y;
+        let width = canvas.width * 0.4;
+        let height = width * img.height / img.width;
         let stickerName = img.src.match(/sticker-\w/)[0];
 
-        if (elementWidth < 0) {
-            elementWidth = 0;
-        }
-
         ctx.filter = 'none';
-        state.set(stickerName + elementWidth, [img, elementWidth, elementHeight, width, height]);
-        ctx.drawImage(img, elementWidth, elementHeight, width, height);
+        state.set(stickerName + imageX, [img, imageX, imageY, width, height]);
+        ctx.drawImage(img, imageX, imageY, width, height);
         deleteModal(event);
     }
 
