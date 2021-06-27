@@ -3,7 +3,7 @@
 window.onload = function () {
     //Данные фильтров
     const filtersData = ['sepia(100%)', 'grayscale(100%)'];
-    const filtersNames = ['Сепия', 'Black&White'];
+    const filtersNames = ['Сепия', 'B&W'];
 
     //Создаем хранилище состояния 
     let state = new Map();
@@ -855,6 +855,7 @@ window.onload = function () {
     const paintSize = document.querySelector('#paint-size');
     const paintBtn = document.querySelector('.paint__add');
     const paintDeleteBtn = document.querySelector('.paint__delete');
+    const isTouchedDevice = (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent));
 
     function draw(e) {
         ctx.lineWidth = paintSize.value;
@@ -867,7 +868,7 @@ window.onload = function () {
         let dx = e.movementX;
         let dy = e.movementY;
 
-        if (e.buttons > 0) {
+        if (e.buttons > 0 || isTouchedDevice) {
             ctx.beginPath();
             ctx.moveTo(x, y);
             ctx.lineTo(x - dx, y - dy);
@@ -877,10 +878,16 @@ window.onload = function () {
     }
     
     paintBtn.addEventListener('click', () => canvas.addEventListener('mousemove', draw));
+    paintBtn.addEventListener('click', () => canvas.addEventListener('touchmove', draw));
+
     paintDeleteBtn.addEventListener('click', () => {
         canvas.removeEventListener('mousemove', draw);
+        canvas.removeEventListener('touchmove', draw);
         drawImage();
     });
+    
     canvas.addEventListener('mouseleave', () => canvas.removeEventListener('mousemove', draw));
+    canvas.addEventListener('touchend', () => canvas.removeEventListener('touchmove', draw));
+
 };
 
