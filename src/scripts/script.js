@@ -151,8 +151,9 @@ window.onload = function () {
     function changePhotoURl(file) {
         let fileURL = window.URL.createObjectURL(file);
         photoToEdit.src = fileURL;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
         photoToEdit.onload = function() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
             setCanvasParam();
             drawImage();
             drawImage();
