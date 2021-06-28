@@ -41,7 +41,7 @@ window.onload = function () {
 
     function getAllPresets() {
         presetsContent = '';
-        let template = /preset\w/;
+        let template = /preset./u;
         for (let item in localStorage) {
             if (localStorage.hasOwnProperty(item) && template.test(item)) {
                 let itemForDataSet = item.split(' ').join('_');
@@ -255,16 +255,26 @@ window.onload = function () {
 
     ranges.forEach(item => item.addEventListener('input', handleRangeChange));
     ranges.forEach(item => item.addEventListener('dblclick', setToInitial));
+
+    //Reset all tuning
+    const resetTuneButton = document.querySelector('.button__reset-tune');
+
+    function resetTunes() {
+        state.delete('filters');
+        ctx.filter = 'none';
+        redrawCanvas();
+        ranges.forEach((range) => setInitialValue(range));
+        tunes.clear();
+    }
+
+    resetTuneButton.addEventListener('click', resetTunes);
     
     //Сбрасываем фильтры
     let resetButton = document.querySelector('.buttons__reset');
 
     function resetAllFilters() {
         state.clear();
-        ctx.filter = 'none';
-        redrawCanvas();
-        ranges.forEach((range) => setInitialValue(range));
-        tunes.clear();
+        resetTunes();
     }
 
     resetButton.addEventListener('click', resetAllFilters);
@@ -333,8 +343,15 @@ window.onload = function () {
     let warningBtn = warning.querySelector('.warning__button');
     let overlay = document.querySelector('.pop-up__overlay');
 
+    function calculateElementLeft(elem) {
+        let elemWidth = elem.getBoundingClientRect().width;
+        let elemLeft = (document.documentElement.clientWidth / 2 - elemWidth / 2);
+        elem.style.left = elemLeft + 'px';
+    }
+
     function showModal() {
         modalAddPresetName.classList.add('modal--show');
+        calculateElementLeft(modalAddPresetName);
         overlay.classList.add('pop-up__overlay--show');
     }
 
@@ -363,6 +380,7 @@ window.onload = function () {
     function checkShowModal() {
         if (tunes.size == 0) {
             warning.classList.add('warning--show');
+            calculateElementLeft(warning);
             overlay.classList.add('pop-up__overlay--show');
         } else {
             showModal();
@@ -572,6 +590,7 @@ window.onload = function () {
     function initTextModal() {
         if (textInput.value == '') {
             missingTextModal.classList.add('missing-text--show');
+            calculateElementLeft(missingTextModal);
             overlay.classList.add('pop-up__overlay--show');
         } else {
             new TextModal().createTextModal();
@@ -855,7 +874,13 @@ window.onload = function () {
     const paintSize = document.querySelector('#paint-size');
     const paintBtn = document.querySelector('.paint__add');
     const paintDeleteBtn = document.querySelector('.paint__delete');
-    const isTouchedDevice = (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent));
+    const paintSection = document.querySelector('.paint');
+    
+    //Не показываем секцию рисования на планшетах и мобильных,
+    //поскольку события touch еще не реализованы
+    if (document.documentElement.clientWidth <= 1024) {
+        paintSection.style.display = 'none';
+    }
 
     function draw(e) {
         ctx.lineWidth = paintSize.value;
@@ -868,7 +893,7 @@ window.onload = function () {
         let dx = e.movementX;
         let dy = e.movementY;
 
-        if (e.buttons > 0 || isTouchedDevice) {
+        if (e.buttons > 0) {
             ctx.beginPath();
             ctx.moveTo(x, y);
             ctx.lineTo(x - dx, y - dy);
@@ -878,16 +903,12 @@ window.onload = function () {
     }
     
     paintBtn.addEventListener('click', () => canvas.addEventListener('mousemove', draw));
-    paintBtn.addEventListener('click', () => canvas.addEventListener('touchmove', draw));
 
     paintDeleteBtn.addEventListener('click', () => {
         canvas.removeEventListener('mousemove', draw);
-        canvas.removeEventListener('touchmove', draw);
         drawImage();
     });
     
     canvas.addEventListener('mouseleave', () => canvas.removeEventListener('mousemove', draw));
-    canvas.addEventListener('touchend', () => canvas.removeEventListener('touchmove', draw));
-
 };
 
