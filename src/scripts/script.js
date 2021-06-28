@@ -9,7 +9,10 @@ window.onload = function () {
     let state = new Map();
     state.set('isRotateSide', false);
     state.set('isMirror', false);
-    
+
+    // Array for drawings
+    let drawings = [];
+
     //Показываем пресеты из Local Storage на странице
     let presets = document.querySelector('.presets__list');
     let presetsContent = '';
@@ -114,6 +117,12 @@ window.onload = function () {
             ctx.drawImage(photoToEdit, 0, 0, canvas.height, canvas.height * photoToEdit.height / photoToEdit.width);
         } else {
             ctx.drawImage(photoToEdit, 0, 0, canvas.width, canvas.width * photoToEdit.height / photoToEdit.width);
+        }
+
+        if (drawings.length > 0) {
+            ctx.filter = 'none';
+            ctx.translate(0, 0);
+            drawings.forEach((item) => ctx.drawImage(item, 0, 0, canvas.width, canvas.width * item.height / item.width));
         }
 
         for (let key of state.keys()) {
@@ -876,6 +885,7 @@ window.onload = function () {
     const paintBtn = document.querySelector('.paint__add');
     const paintDeleteBtn = document.querySelector('.paint__delete');
     const paintSection = document.querySelector('.paint');
+    let canvasLayer, canvasLayerContext;
     
     //Не показываем секцию рисования на планшетах и мобильных,
     //поскольку события touch еще не реализованы
@@ -883,11 +893,43 @@ window.onload = function () {
         paintSection.style.display = 'none';
     }
 
+    function addNewCanvasLayer() {
+        let newCanvas = document.createElement('canvas');
+
+        newCanvas.classList.add('canvas-layer');
+        newCanvas.width = canvas.width;
+        newCanvas.height = canvas.height;
+        newCanvas.style.position = 'absolute';
+        newCanvas.style.top = 0;
+        newCanvas.style.left = 0;
+
+        canvasContainer.appendChild(newCanvas);
+        
+        canvasLayer = document.querySelector('.canvas-layer');
+        canvasLayerContext = canvasLayer.getContext('2d');
+        addListenersToCanvasLayer();
+    }
+
+    function saveLineToImage() {
+        let src = canvasLayer.toDataURL('image/png');
+
+        let imageToSave = document.createElement('img');
+        imageToSave.src = src;
+        imageToSave.classList.add('visually-hidden-photo');
+        imageToSave.classList.add('hidden-photo');
+        imageToSave.onload = function() {
+            canvasContainer.appendChild(imageToSave);
+            drawings.push(imageToSave);
+            drawImage();
+        };
+    }
+
+
     function draw(e) {
-        ctx.lineWidth = paintSize.value;
-        ctx.strokeStyle = paintColor.value;
-        ctx.lineCap = 'round';
-        ctx.filter = 'none';
+        canvasLayerContext.lineWidth = paintSize.value;
+        canvasLayerContext.strokeStyle = paintColor.value;
+        canvasLayerContext.lineCap = 'round';
+        canvasLayerContext.filter = 'none';
 
         let x = e.offsetX;
         let y = e.offsetY;
@@ -895,21 +937,35 @@ window.onload = function () {
         let dy = e.movementY;
 
         if (e.buttons > 0) {
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-            ctx.lineTo(x - dx, y - dy);
-            ctx.stroke();
-            ctx.closePath();
+            canvasLayerContext.beginPath();
+            canvasLayerContext.moveTo(x, y);
+            canvasLayerContext.lineTo(x - dx, y - dy);
+            canvasLayerContext.stroke();
+            canvasLayerContext.closePath();
         }
     }
     
-    paintBtn.addEventListener('click', () => canvas.addEventListener('mousemove', draw));
+    paintBtn.addEventListener('click', () => {
+        addNewCanvasLayer();
+        canvasLayer.addEventListener('mousemove', draw);
+    });
 
     paintDeleteBtn.addEventListener('click', () => {
-        canvas.removeEventListener('mousemove', draw);
+        let imagesToDelete = document.querySelectorAll('.hidden-photo');
+        imagesToDelete.forEach((image) => image.parentNode.removeChild(image));
+        drawings.length = 0;
         drawImage();
     });
     
-    canvas.addEventListener('mouseleave', () => canvas.removeEventListener('mousemove', draw));
+    function addListenersToCanvasLayer() {
+        canvasLayer.addEventListener('mouseleave', () => {
+            canvas.removeEventListener('mousemove', draw);
+            saveLineToImage();
+            let deleteLayer = function() {
+                canvasLayer.parentNode.removeChild(canvasLayer);
+            };
+            setTimeout(deleteLayer, 1000);
+        });
+    }
 };
 
