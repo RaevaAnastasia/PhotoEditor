@@ -122,7 +122,11 @@ window.onload = function () {
         if (drawings.length > 0) {
             ctx.filter = 'none';
             ctx.translate(0, 0);
-            drawings.forEach((item) => ctx.drawImage(item, 0, 0, canvas.width, canvas.width * item.height / item.width));
+            if (state.get('isRotateSide')) {
+                drawings.forEach((item) => ctx.drawImage(item, 0, 0, canvas.height, canvas.height * item.height / item.width));
+            } else {
+                drawings.forEach((item) => ctx.drawImage(item, 0, 0, canvas.width, canvas.width * item.height / item.width));
+            }
         }
 
         for (let key of state.keys()) {
@@ -272,12 +276,14 @@ window.onload = function () {
     function resetTunes() {
         state.delete('filters');
         ctx.filter = 'none';
-        redrawCanvas();
         ranges.forEach((range) => setInitialValue(range));
         tunes.clear();
     }
 
-    resetTuneButton.addEventListener('click', resetTunes);
+    resetTuneButton.addEventListener('click', () => {
+        resetTunes();
+        redrawCanvas();
+    });
     
     //Сбрасываем фильтры
     let resetButton = document.querySelector('.buttons__reset');
@@ -285,6 +291,8 @@ window.onload = function () {
     function resetAllFilters() {
         state.clear();
         resetTunes();
+        drawings.length = 0;
+        redrawCanvas();
     }
 
     resetButton.addEventListener('click', resetAllFilters);
@@ -865,6 +873,7 @@ window.onload = function () {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             canvas.height = height;
             canvas.width = width;
+            resetAllFilters();
             ctx.drawImage(video, 0, 0, width, height);
             photoToEdit.src = canvas.toDataURL("image/png"); 
         };
