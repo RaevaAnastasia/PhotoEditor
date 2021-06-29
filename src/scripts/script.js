@@ -10,8 +10,8 @@ window.onload = function () {
     state.set('isRotateSide', false);
     state.set('isMirror', false);
 
-    // Array for drawings
-    let drawings = [];
+    // Array for sequence of stickers, drawings and texts
+    let queue = [];
 
     //Показываем пресеты из Local Storage на странице
     let presets = document.querySelector('.presets__list');
@@ -119,34 +119,34 @@ window.onload = function () {
             ctx.drawImage(photoToEdit, 0, 0, canvas.width, canvas.width * photoToEdit.height / photoToEdit.width);
         }
 
-        if (drawings.length > 0) {
-            ctx.filter = 'none';
-            ctx.translate(0, 0);
-            if (state.get('isRotateSide')) {
-                drawings.forEach((item) => ctx.drawImage(item, 0, 0, canvas.height, canvas.height * item.height / item.width));
-            } else {
-                drawings.forEach((item) => ctx.drawImage(item, 0, 0, canvas.width, canvas.width * item.height / item.width));
-            }
+        if (queue.length > 0) {
+            queue.forEach((item) => {
+                    switch(item[0]) {
+                        case 'text':
+                            ctx.font = `bold ${item[5]}px Roboto`;
+                            ctx.fillStyle = `${item[4]}`;
+                            ctx.textAlign = 'left';
+                            ctx.filter = 'none';
+                            wrapText(item[1], item[2], item[3]);
+                            break;
+                        case 'sticker':
+                            ctx.filter = 'none';
+                            ctx.drawImage(item[1], item[2], item[3], item[4], item[5]);
+                            break;
+                        case 'img':
+                            ctx.filter = 'none';
+                            ctx.translate(0, 0);
+                            if (state.get('isRotateSide')) {
+                                ctx.drawImage(item[1], 0, 0, canvas.height, canvas.height * item[1].height / item[1].width);
+                            } else {
+                                ctx.drawImage(item[1], 0, 0, canvas.width, canvas.width * item[1].height / item[1].width);
+                            }
+                            break;
+                    }
+                }
+            );
         }
 
-        for (let key of state.keys()) {
-            if (key.match(/sticker-\w/g)) {
-                let data = state.get(key);
-                ctx.filter = 'none';
-                ctx.drawImage(data[0], data[1], data[2], data[3], data[4]);
-            }
-        }
-
-        for (let key of state.keys()) {
-            if (key.match(/text\w/g)) {
-                let data = state.get(key);
-                ctx.font = `bold ${data[4]}px Roboto`;
-                ctx.fillStyle = `${data[3]}`;
-                ctx.textAlign = 'left';
-                ctx.filter = 'none';
-                wrapText(data[0], data[1], data[2]);
-            }
-        }
     }
 
     function redrawCanvas() {
@@ -291,7 +291,7 @@ window.onload = function () {
     function resetAllFilters() {
         state.clear();
         resetTunes();
-        drawings.length = 0;
+        queue.length = 0;
         redrawCanvas();
     }
 
@@ -557,7 +557,7 @@ window.onload = function () {
         ctx.textAlign = 'left';
         ctx.filter = 'none';
         wrapText(textInput.value, textX, textY);
-        state.set(`text${textX}${textY}`, [`${textInput.value}`, textX, textY, textColor, size]);
+        queue.push(['text', `${textInput.value}`, textX, textY, textColor, size]);
         deleteModal(event);
         textInput.value = '';
     } 
@@ -624,11 +624,7 @@ window.onload = function () {
     }
 
     function deleteText() {
-        for (let key of state.keys()) {
-            if ((key.match(/text\w/g))) {
-                state.delete(key);
-            }
-        }
+        deleteAllItems('text');
         drawImage();
     }
 
@@ -709,7 +705,7 @@ window.onload = function () {
         let stickerName = img.src.match(/sticker-\w/)[0];
 
         ctx.filter = 'none';
-        state.set(stickerName + imageX, [img, imageX, imageY, width, height]);
+        queue.push(['sticker', img, imageX, imageY, width, height]);
         ctx.drawImage(img, imageX, imageY, width, height);
         deleteModal(event);
     }
@@ -730,12 +726,20 @@ window.onload = function () {
             stickersElems.forEach(item => item.addEventListener('click', initStickerModal));
         });
 
-    function deleteStickers() {
-        for (let key of state.keys()) {
-            if ((key.match(/sticker-\w/g))) {
-                state.delete(key);
+    function deleteAllItems(type) {
+        let i = 0;
+
+        while (i < queue.length) {
+            if (queue[i][0] === type) {
+                queue.splice(queue.indexOf(queue[i]), 1);
+            } else {
+                ++i;
             }
         }
+    }
+
+    function deleteStickers() {
+        deleteAllItems('sticker');
         drawImage();
     }
 
@@ -928,7 +932,7 @@ window.onload = function () {
         imageToSave.classList.add('hidden-photo');
         imageToSave.onload = function() {
             canvasContainer.appendChild(imageToSave);
-            drawings.push(imageToSave);
+            queue.push(['img', imageToSave]);
             drawImage();
         };
     }
@@ -962,7 +966,7 @@ window.onload = function () {
     paintDeleteBtn.addEventListener('click', () => {
         let imagesToDelete = document.querySelectorAll('.hidden-photo');
         imagesToDelete.forEach((image) => image.parentNode.removeChild(image));
-        drawings.length = 0;
+        deleteAllItems('img');
         drawImage();
     });
     
