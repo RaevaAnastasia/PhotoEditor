@@ -1,11 +1,11 @@
 "use strict";
 
 window.onload = function () {
-    //Данные фильтров
+    //Filters data
     const filtersData = ['sepia(100%)', 'grayscale(100%)'];
     const filtersNames = ['Сепия', 'B&W'];
 
-    //Создаем хранилище состояния 
+    //Create state for app 
     let state = new Map();
     state.set('isRotateSide', false);
     state.set('isMirror', false);
@@ -13,7 +13,8 @@ window.onload = function () {
     // Array for sequence of stickers, drawings and texts
     let queue = [];
 
-    //Показываем пресеты из Local Storage на странице
+
+    //Show presets from Local Storage
     let presets = document.querySelector('.presets__list');
     let presetsContent = '';
 
@@ -27,6 +28,8 @@ window.onload = function () {
         presetsList.forEach(item => item.addEventListener('click', applyPreset));
     }
 
+
+    //Apply presets to preview image
     function applyPresetToPreview() {
         let previews = document.querySelectorAll('.presets__image--custom');
         previews.forEach(preview => {
@@ -42,6 +45,7 @@ window.onload = function () {
         });
     }
 
+    //Get presets data from Local Storage
     function getAllPresets() {
         presetsContent = '';
         let template = /preset./u;
@@ -65,7 +69,9 @@ window.onload = function () {
     
     getAllPresets();
 
-    //Создание холста с изображением по умолчанию
+
+
+    //Create canvas with default image
     let dropbox = document.querySelector('.photo__dropbox');
     let photoToEdit = document.querySelector('.photo__img');
     let canvasContainer = document.querySelector('.photo__wrap');
@@ -100,6 +106,7 @@ window.onload = function () {
         canvas.height = height;
     }
 
+    //Function for drawing image and all changes
     function drawImage() {
         if (state.has('filters')) {
             ctx.filter = state.get('filters');
@@ -158,7 +165,8 @@ window.onload = function () {
     drawImage();
     window.onresize = redrawCanvas;
 
-    //Загрузка файла
+
+    //Upload file from user device
     let newPhoto  = document.querySelector('#newPhoto');
 
     function changePhotoURl(file) {
@@ -187,6 +195,7 @@ window.onload = function () {
         event.preventDefault();
     }
 
+    //Handle drop event
     function drop(event) {
         stopDefaultEvent(event);
 
@@ -200,7 +209,9 @@ window.onload = function () {
     dropbox.addEventListener('dragover', stopDefaultEvent);
     dropbox.addEventListener('drop', drop);
 
-    //Управление слайдерами 
+
+
+    //Handle sliders
     let ranges = document.querySelectorAll('.tune__range');
     let tunes = new Map();
 
@@ -270,7 +281,8 @@ window.onload = function () {
     ranges.forEach(item => item.addEventListener('input', handleRangeChange));
     ranges.forEach(item => item.addEventListener('dblclick', setToInitial));
 
-    //Reset all tuning
+
+    //Reset all tuning via sliders
     const resetTuneButton = document.querySelector('.button__reset-tune');
 
     function resetTunes() {
@@ -285,7 +297,7 @@ window.onload = function () {
         redrawCanvas();
     });
     
-    //Сбрасываем фильтры
+    //Reset all changes back to unedited image
     let resetButton = document.querySelector('.buttons__reset');
 
     function resetAllFilters() {
@@ -297,7 +309,9 @@ window.onload = function () {
 
     resetButton.addEventListener('click', resetAllFilters);
 
-    //Скачивание файла
+
+
+    //Download edites image
     const saveButton = document.querySelector('.buttons__save');
     
     function saveImage() {
@@ -314,7 +328,9 @@ window.onload = function () {
 
     saveButton.addEventListener('click', saveImage);
 
-    //Фильтры 
+    
+
+    //Default filters
     const filterContainer = document.querySelector('.filters');
     let filtersContent = '';
 
@@ -350,7 +366,9 @@ window.onload = function () {
     addListenerToFilters();
     applyFilterToPreview();
 
-    //Сохранение кастомного пресета - сочетание фильтров
+
+
+    //Save custom presets to Local Storage
     let addPresetButton = document.querySelector('.presets__add-preset');
     let modalAddPresetName = document.querySelector('.modal');
     let inputPresetName = modalAddPresetName.querySelector('#preset-name');
@@ -425,7 +443,9 @@ window.onload = function () {
     closeButton.addEventListener('click', closeModal);
     addPresetButton.addEventListener('click', checkShowModal);
 
-    //Применение пресета к фото 
+    
+    
+    //Apply saved custom presets to photo
 
     function setFilterRanges(filters) {
         let filtersArray = filters.split(' ');
@@ -465,8 +485,8 @@ window.onload = function () {
         }
     }
 
-    //Удаление пресета из списка пресетов
-
+    
+    //Delete preset from preset's list
     function deletePreset(event) {
         let presetName = event.target.dataset.name.split('_').join(' ');
         localStorage.removeItem(presetName);
@@ -474,7 +494,9 @@ window.onload = function () {
         presetToDelete.parentNode.removeChild(presetToDelete);
     }
 
-    //Добавление текста
+
+
+    //Text
     let textInput = document.querySelector('.text__input');
     let textAddButton = document.querySelector('.text__add');
     let clearTextButton = document.querySelector('.text__delete');
@@ -483,6 +505,7 @@ window.onload = function () {
     let colorInput = document.querySelector('.text__color');
     let textSize = document.querySelector('.text__size');
 
+    //Class for creating modal with text
     class TextModal {
         createTextModal() {
             this.text = textInput.value;
@@ -522,6 +545,7 @@ window.onload = function () {
         textInput.value = '';
     }
 
+    //Wrap multiline text
     function wrapText(text, x, y) {
         let maxWidth = canvas.width * 0.8;
         let lineHeight = textSize.value * 1.4;
@@ -577,6 +601,7 @@ window.onload = function () {
         modalElements.forEach(item => item.addEventListener('mousedown', MoveElement));
     }
 
+    //Function for moving modal with text or sticker
     function MoveElement(event) {
         let element = event.target.closest('div');
         let shiftX = event.clientX - element.getBoundingClientRect().left / 2;
@@ -632,11 +657,24 @@ window.onload = function () {
     textAddButton.addEventListener('click', initTextModal);
     clearTextButton.addEventListener('click', deleteText);
 
-    //Стикеры
+
+
+    //Stickers
     const stickersContainer = document.querySelector('.stickers__list');
     const stickersDeleteButton = document.querySelector('.stickers__delete');
     let url = 'stickers.json';
 
+    //Get stickers data in json and parse it
+    fetch(url)
+        .then(result => result.json())
+        .then(obj => {
+            const stickersData = obj;
+            fillStickersList(stickersData);
+            const stickersElems = document.querySelectorAll('.stickers__item');
+            stickersElems.forEach(item => item.addEventListener('click', initStickerModal));
+        });
+
+    // Class for creating sticker in stickers list on editing panel
     class Sticker {
         constructor (url, id) {
             this.url = url;
@@ -663,6 +701,7 @@ window.onload = function () {
         }
     }
 
+    //Class for creating modal with sticker
     class StickerModal {
         constructor(event) {
             this.src = event.target.src;
@@ -717,15 +756,7 @@ window.onload = function () {
         addListenerToMove();
     }
 
-    fetch(url)
-        .then(result => result.json())
-        .then(obj => {
-            const stickersData = obj;
-            fillStickersList(stickersData);
-            const stickersElems = document.querySelectorAll('.stickers__item');
-            stickersElems.forEach(item => item.addEventListener('click', initStickerModal));
-        });
-
+    //Function for deleting all items of type from queue
     function deleteAllItems(type) {
         let i = 0;
 
@@ -745,13 +776,16 @@ window.onload = function () {
 
     stickersDeleteButton.addEventListener('click', deleteStickers);
 
-    //Поворот изображения
+
+
+    //Rotate image
     const rotateLeftBtn = document.querySelector('.rotate__button--left');
     const rotateRightBtn = document.querySelector('.rotate__button--right');
     const rotateRoundBtn = document.querySelector('.rotate__button--down');
     const rotateMirrorBtn = document.querySelector('.rotate__button--mirror');
     let angleSum = 0;
 
+    //Rotate image to right or to left
     function rotateImage(event) {
         state.set('isRotateSide', true);
         let angle = event.target.dataset.name == 'left' ? -90 : 90;
@@ -771,6 +805,7 @@ window.onload = function () {
         drawImage();
     }
 
+    //Rotete image round and back
     function rotateRound() {
         state.set('isRotateSide', false);
         let angle = 180;
@@ -792,6 +827,7 @@ window.onload = function () {
         drawImage();
     }
 
+    //Mirror Image
     function mirrorImage() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         state.set('isMirror', true);
@@ -804,17 +840,19 @@ window.onload = function () {
     rotateRightBtn.addEventListener('click', rotateImage);
     rotateMirrorBtn.addEventListener('click', mirrorImage);
 
-    //Снимок с вебкамеры
+    //Make a snapshot from user device camera
 
-    //Если в браузере нет свойств navigator.mediaDevices и navigator.mediaDevices.getUserMedia, вернет false
+    //Check if browser support mediaDevices
     function hasGetUserMedia() {
         return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
     }
 
     let isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent.toLowerCase());
 
+    //Functional works if hasGetUserMedia and if the browser is not Safari
+    //Safari has problem with using video as a source for context.drawImage()
     if (hasGetUserMedia() && !isSafari) {
-        // Cоздаем кнопку для открытия модального окна с камерой
+        // Create button for shooting
         let sourceContainer = document.querySelector('.tools__download');
         let buttonTakePhoto = document.createElement('button'); 
         buttonTakePhoto.classList.add('tools__make-photo');
@@ -822,26 +860,25 @@ window.onload = function () {
         buttonTakePhoto.textContent = 'Сделать снимок с веб-камеры';
         sourceContainer.appendChild(buttonTakePhoto);
 
-        //Помещаем в переменые необходимые DOM-элементы
         const video = document.querySelector(".webcamera__video");
         const openCameraButton = document.querySelector('.tools__make-photo');
         const webcameraModal = document.querySelector('.webcamera');
         const takePhotoButton = webcameraModal.querySelector('.webcamera__make-photo');
         const closeWebCamera = webcameraModal.querySelector('.webcamera__close');
 
-        // Создаем объект параметров
+        // Param object
         const constraints = {
             video: { width: canvas.width, height: canvas.height }
         };
 
-        // В переменную track  сохраняется воспроизводимый трек - в нашем случае видео
+        // Variable for video track from camera
         let track;
 
-        //Запрашиваем разрешение на доступ к камере и при подтверждении открываем модальное окно и выводим видео с камеры
+        //Ask for access to user camera and draw video 
         const openWebCamera = function() {
             navigator.mediaDevices.getUserMedia(constraints)
             .then((stream) => {
-                    webcameraModal.classList.add('webcamera--show'); // Показываем модальное окно
+                    webcameraModal.classList.add('webcamera--show');
                     video.srcObject = stream;
                     video.setAttribute('width', canvas.width);
                     video.setAttribute('height', canvas.height);
@@ -856,13 +893,13 @@ window.onload = function () {
                 });
         };
 
-        //Закрываем модальное окно и останавливаем видео-трек
+        //Close camera modal
         const closeCameraModal = function() {
             webcameraModal.classList.remove('webcamera--show');
             track.stop();
         };
 
-        //Закрываем модальное окно и отрисовываем видеокадр на canvas
+        //Close camera modal and draw image on canvas
         const takePhoto = function() {
             let width, height;
             if (video.videoWidth > canvas.width) {
@@ -877,22 +914,23 @@ window.onload = function () {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             canvas.height = height;
             canvas.width = width;
-            resetAllFilters();
             ctx.drawImage(video, 0, 0, width, height);
             photoToEdit.src = canvas.toDataURL("image/png"); 
         };
 
-        //Навешиваем обработчики событий
         openCameraButton.addEventListener('click', openWebCamera);
         closeWebCamera.addEventListener('click', closeCameraModal);
         takePhotoButton.addEventListener('click', takePhoto);
     } 
 
+    //Try to call default modal before reload or leave page
     window.addEventListener('beforeunload', function(e) {
         return true;
     });
 
-    //Рисование
+
+
+    //Drawing
     const paintColor = document.querySelector('#paint-color');
     const paintSize = document.querySelector('#paint-size');
     const paintBtn = document.querySelector('.paint__add');
@@ -900,8 +938,8 @@ window.onload = function () {
     const paintSection = document.querySelector('.paint');
     let canvasLayer, canvasLayerContext;
     
-    //Не показываем секцию рисования на планшетах и мобильных,
-    //поскольку события touch еще не реализованы
+    //Do not show section on mobile and tablets 
+    //because touch event do not handle yet
     if (document.documentElement.clientWidth <= 1024) {
         paintSection.style.display = 'none';
     }
