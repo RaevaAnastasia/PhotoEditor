@@ -15,23 +15,48 @@ window.onload = function () {
 
 
     //Show presets from Local Storage
-    let presets = document.querySelector('.presets__list');
+    const presets = document.querySelector('.presets__list');
     let presetsContent = '';
 
-    function addListenerToDeleteButton() {
-        let presetDeleteButton = document.querySelectorAll('.preset__delete');
-        presetDeleteButton.forEach(item => item.addEventListener('click', deletePreset));
-    }
+    //Delete preset from preset's list
+    let deletePreset = (event) => {
+        let presetName = event.target.dataset.name.split('_').join(' ');
+        localStorage.removeItem(presetName);
+        let presetToDelete = event.target.closest(`li`);
+        presetToDelete.parentNode.removeChild(presetToDelete);
+    };
 
-    function addListenerToPreset() {
-        let presetsList = document.querySelectorAll('.presets__item');
+    let applyPreset = (event) => {
+        if (event.target.dataset.name) {
+            let presetToUse = event.target.dataset.name.split('_').join(' ');
+            let presetData = JSON.parse(localStorage.getItem(presetToUse));
+            let filters = '';
+    
+            for (let item in presetData) {
+                filters += ` ${item}(${presetData[item]})`;
+            }
+    
+            ctx.filter = filters;
+            state.set('filters', filters);
+            drawImage();
+            setFilterRanges(filters);
+        }
+    };
+
+    let addListenerToDeleteButton = () => {
+        const presetDeleteButton = document.querySelectorAll('.preset__delete');
+        presetDeleteButton.forEach(item => item.addEventListener('click', deletePreset));
+    };
+
+    let addListenerToPreset = () => {
+        const presetsList = document.querySelectorAll('.presets__item');
         presetsList.forEach(item => item.addEventListener('click', applyPreset));
-    }
+    };
 
 
     //Apply presets to preview image
-    function applyPresetToPreview() {
-        let previews = document.querySelectorAll('.presets__image--custom');
+    let applyPresetToPreview = () => {
+        const previews = document.querySelectorAll('.presets__image--custom');
         previews.forEach(preview => {
             let presetToUse = preview.dataset.name.split('_').join(' ');
             let presetData = JSON.parse(localStorage.getItem(presetToUse));
@@ -43,12 +68,12 @@ window.onload = function () {
 
             preview.style.filter = filters;
         });
-    }
+    };
 
     //Get presets data from Local Storage
-    function getAllPresets() {
+    let getAllPresets = () => {
         presetsContent = '';
-        let template = /preset./u;
+        const template = /preset./u;
         for (let item in localStorage) {
             if (localStorage.hasOwnProperty(item) && template.test(item)) {
                 let itemForDataSet = item.split(' ').join('_');
@@ -65,23 +90,23 @@ window.onload = function () {
         addListenerToDeleteButton();
         addListenerToPreset();
         applyPresetToPreview();
-    }
+    };
     
     getAllPresets();
 
 
 
     //Create canvas with default image
-    let dropbox = document.querySelector('.photo__dropbox');
-    let photoToEdit = document.querySelector('.photo__img');
-    let canvasContainer = document.querySelector('.photo__wrap');
-    let canvas = document.querySelector('#canvas');
-    let ctx = canvas.getContext('2d');
+    const dropbox = document.querySelector('.photo__dropbox');
+    const photoToEdit = document.querySelector('.photo__img');
+    const canvasContainer = document.querySelector('.photo__wrap');
+    const canvas = document.querySelector('#canvas');
+    const ctx = canvas.getContext('2d');
 
-    function setCanvasParam()  {
+    let setCanvasParam = () => {
         let height = document.documentElement.clientHeight;
 
-        function getRatio() {
+        let getRatio = () => {
             photoToEdit.style.display = 'block'; 
             let ratio;
             if (photoToEdit.offsetWidth < photoToEdit.offsetHeight) {
@@ -92,7 +117,7 @@ window.onload = function () {
 
             photoToEdit.style.display = 'none';
             return ratio;
-        }
+        };
 
         let ratio = photoToEdit.height / photoToEdit.width || getRatio();
         let width = height / ratio;
@@ -104,10 +129,10 @@ window.onload = function () {
 
         canvas.width = width;
         canvas.height = height;
-    }
+    };
 
     //Function for drawing image and all changes
-    function drawImage() {
+    let drawImage = () => {
         if (state.has('filters')) {
             ctx.filter = state.get('filters');
         }
@@ -153,13 +178,12 @@ window.onload = function () {
                 }
             );
         }
+    };
 
-    }
-
-    function redrawCanvas() {
+    let redrawCanvas = () => {
         setCanvasParam();
         drawImage();
-    }
+    };
     
     setCanvasParam();
     drawImage();
@@ -167,9 +191,9 @@ window.onload = function () {
 
 
     //Upload file from user device
-    let newPhoto  = document.querySelector('#newPhoto');
+    const newPhoto  = document.querySelector('#newPhoto');
 
-    function changePhotoURl(file) {
+    let changePhotoURl = (file) => {
         let fileURL = window.URL.createObjectURL(file);
         photoToEdit.src = fileURL;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -182,7 +206,7 @@ window.onload = function () {
         file.onload = function() {
             window.URL.revokeObjectURL(this.src);
         };
-    }
+    };
 
     function handleFile() {
         const file = this.files[0];
@@ -190,19 +214,19 @@ window.onload = function () {
         resetAllFilters();
     }
 
-    function stopDefaultEvent(event) {
+    let stopDefaultEvent = (event) => {
         event.stopPropagation();
         event.preventDefault();
-    }
+    };
 
     //Handle drop event
-    function drop(event) {
+    let drop = (event) => {
         stopDefaultEvent(event);
 
         let file = event.dataTransfer.files[0];
         changePhotoURl(file);
         resetAllFilters();
-    }
+    };
 
     newPhoto.addEventListener('change', handleFile);
     dropbox.addEventListener('dragenter', stopDefaultEvent);
@@ -212,10 +236,10 @@ window.onload = function () {
 
 
     //Handle sliders
-    let ranges = document.querySelectorAll('.tune__range');
+    const ranges = document.querySelectorAll('.tune__range');
     let tunes = new Map();
 
-    function addUnits(rangeName, rangeValue) {
+    let addUnits = (rangeName, rangeValue) => {
         switch(rangeName) {
             case 'blur':
                 rangeValue = rangeValue + 'px';
@@ -235,9 +259,9 @@ window.onload = function () {
         }
 
         return rangeValue;
-    }
+    };
 
-    function handleRangeChange (event) {
+    let handleRangeChange = (event) => {
         let range = event.target;
         let rangeName = range.name;
         let filters = "";
@@ -252,9 +276,9 @@ window.onload = function () {
         ctx.filter = filters;
         state.set('filters', filters);
         drawImage();
-    }
+    };
 
-    function setInitialValue(range) {
+    let setInitialValue = (range) => {
         switch(range.id) {
             case 'brightness': 
                 range.value = 1;
@@ -270,13 +294,13 @@ window.onload = function () {
             range.value = 0;
             break;
         }
-    }
+    };
 
-    function setToInitial(event) {
+    let setToInitial = (event) => {
         let range = event.target;
         setInitialValue(range);
         handleRangeChange(event);
-    }
+    };
 
     ranges.forEach(item => item.addEventListener('input', handleRangeChange));
     ranges.forEach(item => item.addEventListener('dblclick', setToInitial));
@@ -285,12 +309,12 @@ window.onload = function () {
     //Reset all tuning via sliders
     const resetTuneButton = document.querySelector('.button__reset-tune');
 
-    function resetTunes() {
+    let resetTunes = () => {
         state.delete('filters');
         ctx.filter = 'none';
         ranges.forEach((range) => setInitialValue(range));
         tunes.clear();
-    }
+    };
 
     resetTuneButton.addEventListener('click', () => {
         resetTunes();
@@ -298,7 +322,7 @@ window.onload = function () {
     });
     
     //Reset all changes back to unedited image
-    let resetButton = document.querySelector('.buttons__reset');
+    const resetButton = document.querySelector('.buttons__reset');
 
     function resetAllFilters() {
         state.clear();
@@ -314,8 +338,8 @@ window.onload = function () {
     //Download edites image
     const saveButton = document.querySelector('.buttons__save');
     
-    function saveImage() {
-        let formats = document.querySelectorAll('.format__radio');
+    let saveImage = () => {
+        const formats = document.querySelectorAll('.format__radio');
         let format;
         formats.forEach(item => {
             if (item.checked) {
@@ -324,7 +348,7 @@ window.onload = function () {
         });
         let url = canvas.toDataURL(format);
         saveButton.href = url;
-    }
+    };
 
     saveButton.addEventListener('click', saveImage);
 
@@ -334,25 +358,25 @@ window.onload = function () {
     const filterContainer = document.querySelector('.filters');
     let filtersContent = '';
 
-    function addListenerToFilters() {
-        let filterList = document.querySelectorAll('.filters__item');
+    let addListenerToFilters = () => {
+        const filterList = document.querySelectorAll('.filters__item');
         filterList.forEach(item => item.addEventListener('click', applyFilter));
-    }
+    };
 
-    function applyFilterToPreview() {
-        let previews = document.querySelectorAll('.filters__image');
+    let applyFilterToPreview = () => {
+        const previews = document.querySelectorAll('.filters__image');
         previews.forEach(preview => {
             let filterToUse = preview.dataset.name;
             preview.style.filter = filterToUse;
         });
-    }
+    };
 
-    function applyFilter(event) {
+    let applyFilter = (event) => {
         let filter = event.target.dataset.name;
         ctx.filter = filter;
         state.set('filters', filter);
         drawImage();
-    }
+    };
 
     filtersData.forEach(item => {
         let itemContent = `<li class="presets__item filters__item" data-name=${item}>
@@ -369,51 +393,46 @@ window.onload = function () {
 
 
     //Save custom presets to Local Storage
-    let addPresetButton = document.querySelector('.presets__add-preset');
-    let modalAddPresetName = document.querySelector('.modal');
-    let inputPresetName = modalAddPresetName.querySelector('#preset-name');
-    let closeButton = modalAddPresetName.querySelector('.modal__close');
-    let readyButton = modalAddPresetName.querySelector('.modal__btn-add-name');
+    const addPresetButton = document.querySelector('.presets__add-preset');
+    const modalAddPresetName = document.querySelector('.modal');
+    const inputPresetName = modalAddPresetName.querySelector('#preset-name');
+    const closeButton = modalAddPresetName.querySelector('.modal__close');
+    const readyButton = modalAddPresetName.querySelector('.modal__btn-add-name');
+    const warning = document.querySelector('.warning');
+    const warningBtn = warning.querySelector('.warning__button');
+    const overlay = document.querySelector('.pop-up__overlay');
     let presetName = '';
-    let warning = document.querySelector('.warning');
-    let warningBtn = warning.querySelector('.warning__button');
-    let overlay = document.querySelector('.pop-up__overlay');
 
-    function calculateElementLeft(elem) {
+    let calculateElementLeft = (elem) => {
         let elemWidth = elem.getBoundingClientRect().width;
         let elemLeft = (document.documentElement.clientWidth / 2 - elemWidth / 2);
         elem.style.left = elemLeft + 'px';
-    }
+    };
 
-    function showModal() {
+    let showModal = () => {
         modalAddPresetName.classList.add('modal--show');
         calculateElementLeft(modalAddPresetName);
         overlay.classList.add('pop-up__overlay--show');
-    }
+    };
 
-    function closeWarning() {
+    let closeWarning = () => {
         warning.classList.remove('warning--show');
         overlay.classList.remove('pop-up__overlay--show');
-    }
+    };
 
-    function setDefaultName() {
+    let setDefaultName = () => {
         let date = new Date();
         presetName = `${addZero(date.getDate())}.${addZero(date.getMonth())}.${date.getFullYear()}-${addZero(date.getHours())}:${addZero(date.getMinutes())}:${addZero(date.getSeconds())}`;
-    }
+    };
 
-    function addZero(elem) {
-        if (elem < 10) {
-            return '0' + elem;
-        }
-        return elem;
-    }
+    let addZero = (elem) => elem < 10 ? '0' + elem : elem;
 
-    function closeModal() {
+    let closeModal = () => {
         modalAddPresetName.classList.remove('modal--show');
         overlay.classList.remove('pop-up__overlay--show');
-    }
+    };
 
-    function checkShowModal() {
+    let checkShowModal = () => {
         if (tunes.size == 0) {
             warning.classList.add('warning--show');
             calculateElementLeft(warning);
@@ -421,9 +440,9 @@ window.onload = function () {
         } else {
             showModal();
         }
-    }
+    };
     
-    function saveCustomPreset() {
+    let saveCustomPreset = () => {
         let tunesToObj = Object.fromEntries(tunes);
         let tunesToJSON = JSON.stringify(tunesToObj);
         
@@ -436,7 +455,7 @@ window.onload = function () {
         inputPresetName.value = '';
         closeModal();
         getAllPresets();
-    }
+    };
     
     warningBtn.addEventListener('click', closeWarning);
     readyButton.addEventListener('click', saveCustomPreset);
@@ -447,7 +466,7 @@ window.onload = function () {
     
     //Apply saved custom presets to photo
 
-    function setFilterRanges(filters) {
+    let setFilterRanges = (filters) => {
         let filtersArray = filters.split(' ');
         ranges.forEach(item => {
             for (let filter of filtersArray) {
@@ -466,44 +485,17 @@ window.onload = function () {
                 }
             }
         });
-    }
+    };
     
-    function applyPreset(event) {
-        if (event.target.dataset.name) {
-            let presetToUse = event.target.dataset.name.split('_').join(' ');
-            let presetData = JSON.parse(localStorage.getItem(presetToUse));
-            let filters = '';
     
-            for (let item in presetData) {
-                filters += ` ${item}(${presetData[item]})`;
-            }
-    
-            ctx.filter = filters;
-            state.set('filters', filters);
-            drawImage();
-            setFilterRanges(filters);
-        }
-    }
-
-    
-    //Delete preset from preset's list
-    function deletePreset(event) {
-        let presetName = event.target.dataset.name.split('_').join(' ');
-        localStorage.removeItem(presetName);
-        let presetToDelete = event.target.closest(`li`);
-        presetToDelete.parentNode.removeChild(presetToDelete);
-    }
-
-
-
     //Text
-    let textInput = document.querySelector('.text__input');
-    let textAddButton = document.querySelector('.text__add');
-    let clearTextButton = document.querySelector('.text__delete');
-    let missingTextModal = document.querySelector('.missing-text');
-    let missingTextBtn = document.querySelector('.missing-text__button');
-    let colorInput = document.querySelector('.text__color');
-    let textSize = document.querySelector('.text__size');
+    const textInput = document.querySelector('.text__input');
+    const textAddButton = document.querySelector('.text__add');
+    const clearTextButton = document.querySelector('.text__delete');
+    const missingTextModal = document.querySelector('.missing-text');
+    const missingTextBtn = document.querySelector('.missing-text__button');
+    const colorInput = document.querySelector('.text__color');
+    const textSize = document.querySelector('.text__size');
 
     //Class for creating modal with text
     class TextModal {
@@ -539,14 +531,14 @@ window.onload = function () {
         }
     }
 
-    function deleteModal(event) {
+    let deleteModal = (event) => {
         let modalToDelete = event.target.closest(`div`);
         modalToDelete.parentNode.removeChild(modalToDelete);
         textInput.value = '';
-    }
+    };
 
     //Wrap multiline text
-    function wrapText(text, x, y) {
+    let wrapText = (text, x, y) => {
         let maxWidth = canvas.width * 0.8;
         let lineHeight = textSize.value * 1.4;
         let words = text.split(' ');
@@ -566,9 +558,9 @@ window.onload = function () {
             }
         }
         ctx.fillText(line, x, y);
-    }
+    };
     
-    function applyText(event) {
+    let applyText = (event) => {
         let element = event.target.closest('div');
         let textContent = element.querySelector('div');
         let size = textSize.value;
@@ -584,25 +576,25 @@ window.onload = function () {
         queue.push(['text', `${textInput.value}`, textX, textY, textColor, size]);
         deleteModal(event);
         textInput.value = '';
-    } 
+    };
 
-    function addListenerToDeleteBtn() {
+    let addListenerToDeleteBtn = () => {
         let deleteModalBtns = document.querySelectorAll('.photo__delete-modal');
         deleteModalBtns.forEach(item => item.addEventListener('click', deleteModal));
-    }
+    };
 
-    function addListenerToAddButton(func) {
+    let addListenerToAddButton = (func) => {
         let addModalBtns = document.querySelectorAll('.photo__add-modal');
         addModalBtns.forEach(item => item.addEventListener('click', func));
-    }
+    };
 
-    function addListenerToMove() {
+    let addListenerToMove = () => {
         let modalElements = document.querySelectorAll('.photo__modal');
         modalElements.forEach(item => item.addEventListener('mousedown', MoveElement));
-    }
+    };
 
     //Function for moving modal with text or sticker
-    function MoveElement(event) {
+    let MoveElement = (event) => {
         let element = event.target.closest('div');
         let shiftX = event.clientX - element.getBoundingClientRect().left / 2;
         let shiftY = event.clientY - element.getBoundingClientRect().top / 2;
@@ -611,26 +603,24 @@ window.onload = function () {
             return false;
         };
 
-        function moveAt(x, y) {
+        let moveAt = (x, y) => {
             element.style.left = x - shiftX + 'px';
             element.style.top = y - shiftY + 'px';
-        }
+        };
     
-        function onMouseMove(event) {
-            moveAt(event.pageX, event.pageY);
-        }
+        let onMouseMove = (event) => moveAt(event.pageX, event.pageY);
         
-        function deleteListeners() {
+        let deleteListeners = () => {
             canvasContainer.removeEventListener('mousemove',onMouseMove);
             element.onmouseup = null;
-        }
+        };
         
         canvasContainer.addEventListener('mousemove', onMouseMove);
         element.addEventListener('mouseup', deleteListeners);
         element.addEventListener('mouseout', deleteListeners);
-    }
+    };
     
-    function initTextModal() {
+    let initTextModal = () => {
         if (textInput.value == '') {
             missingTextModal.classList.add('missing-text--show');
             calculateElementLeft(missingTextModal);
@@ -641,17 +631,17 @@ window.onload = function () {
             addListenerToAddButton(applyText);
             addListenerToMove();
         }
-    }
+    };
 
-    function closeMissingTextModal() {
+    let closeMissingTextModal = () => {
         missingTextModal.classList.remove('missing-text--show');
         overlay.classList.remove('pop-up__overlay--show');
-    }
+    };
 
-    function deleteText() {
+    let deleteText = () => {
         deleteAllItems('text');
         drawImage();
-    }
+    };
 
     missingTextBtn.addEventListener('click', closeMissingTextModal);
     textAddButton.addEventListener('click', initTextModal);
@@ -662,7 +652,7 @@ window.onload = function () {
     //Stickers
     const stickersContainer = document.querySelector('.stickers__list');
     const stickersDeleteButton = document.querySelector('.stickers__delete');
-    let url = 'stickers.json';
+    const url = 'stickers.json';
 
     //Get stickers data in json and parse it
     fetch(url)
@@ -694,12 +684,12 @@ window.onload = function () {
         }
     }
 
-    function fillStickersList(data) {
+    let fillStickersList = (data) => {
         for (let item in data) {
             let sticker = new Sticker(data[item].url, data[item].id);
             sticker.createSticker();
         }
-    }
+    };
 
     //Class for creating modal with sticker
     class StickerModal {
@@ -734,30 +724,29 @@ window.onload = function () {
         }
     }
 
-    function applySticker(event) {
+    let applySticker = (event) => {
         let element = event.target.closest('div');
         let img = element.querySelector('.photo__sticker');
         let imageX = img.getBoundingClientRect().x - canvas.getBoundingClientRect().x;
         let imageY = img.getBoundingClientRect().y - canvas.getBoundingClientRect().y;
         let width = canvas.width * 0.4;
         let height = width * img.height / img.width;
-        let stickerName = img.src.match(/sticker-\w/)[0];
 
         ctx.filter = 'none';
         queue.push(['sticker', img, imageX, imageY, width, height]);
         ctx.drawImage(img, imageX, imageY, width, height);
         deleteModal(event);
-    }
+    };
 
-    function initStickerModal(event) {
+    let initStickerModal = (event) => {
         new StickerModal(event).createStickerModal();
         addListenerToDeleteBtn();
         addListenerToAddButton(applySticker);
         addListenerToMove();
-    }
+    };
 
     //Function for deleting all items of type from queue
-    function deleteAllItems(type) {
+    let deleteAllItems = (type) => {
         let i = 0;
 
         while (i < queue.length) {
@@ -767,12 +756,12 @@ window.onload = function () {
                 ++i;
             }
         }
-    }
+    };
 
-    function deleteStickers() {
+    let deleteStickers = () => {
         deleteAllItems('sticker');
         drawImage();
-    }
+    };
 
     stickersDeleteButton.addEventListener('click', deleteStickers);
 
@@ -786,7 +775,7 @@ window.onload = function () {
     let angleSum = 0;
 
     //Rotate image to right or to left
-    function rotateImage(event) {
+    let rotateImage = (event) => {
         state.set('isRotateSide', true);
         let angle = event.target.dataset.name == 'left' ? -90 : 90;
         let ratio = photoToEdit.width / photoToEdit.height;
@@ -803,10 +792,10 @@ window.onload = function () {
         ctx.translate(x, y);
         ctx.rotate((Math.PI / 180) * angle);
         drawImage();
-    }
+    };
 
     //Rotete image round and back
-    function rotateRound() {
+    let rotateRound = () => {
         state.set('isRotateSide', false);
         let angle = 180;
         let x = 0;
@@ -825,15 +814,15 @@ window.onload = function () {
 
         ctx.rotate((Math.PI / 180) * angleSum);
         drawImage();
-    }
+    };
 
     //Mirror Image
-    function mirrorImage() {
+    let mirrorImage = () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         state.set('isMirror', true);
         drawImage();
         state.set('isMirror', false);
-    }
+    };
 
     rotateRoundBtn.addEventListener('click', rotateRound);
     rotateLeftBtn.addEventListener('click', rotateImage);
@@ -843,18 +832,16 @@ window.onload = function () {
     //Make a snapshot from user device camera
 
     //Check if browser support mediaDevices
-    function hasGetUserMedia() {
-        return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
-    }
-
-    let isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent.toLowerCase());
+    let hasGetUserMedia = () => !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+    
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent.toLowerCase());
 
     //Functional works if hasGetUserMedia and if the browser is not Safari
     //Safari has problem with using video as a source for context.drawImage()
     if (hasGetUserMedia() && !isSafari) {
         // Create button for shooting
-        let sourceContainer = document.querySelector('.tools__download');
-        let buttonTakePhoto = document.createElement('button'); 
+        const sourceContainer = document.querySelector('.tools__download');
+        const buttonTakePhoto = document.createElement('button'); 
         buttonTakePhoto.classList.add('tools__make-photo');
         buttonTakePhoto.classList.add('button');
         buttonTakePhoto.textContent = 'Сделать снимок с веб-камеры';
@@ -894,13 +881,13 @@ window.onload = function () {
         };
 
         //Close camera modal
-        const closeCameraModal = function() {
+        let closeCameraModal = () => {
             webcameraModal.classList.remove('webcamera--show');
             track.stop();
         };
 
         //Close camera modal and draw image on canvas
-        const takePhoto = function() {
+        let takePhoto = () => {
             let width, height;
             if (video.videoWidth > canvas.width) {
                 width = canvas.width;
@@ -944,7 +931,7 @@ window.onload = function () {
         paintSection.style.display = 'none';
     }
 
-    function addNewCanvasLayer() {
+    let addNewCanvasLayer = () => {
         let newCanvas = document.createElement('canvas');
 
         newCanvas.classList.add('canvas-layer');
@@ -959,9 +946,9 @@ window.onload = function () {
         canvasLayer = document.querySelector('.canvas-layer');
         canvasLayerContext = canvasLayer.getContext('2d');
         addListenersToCanvasLayer();
-    }
+    };
 
-    function saveLineToImage() {
+    let saveLineToImage = () => {
         let src = canvasLayer.toDataURL('image/png');
 
         let imageToSave = document.createElement('img');
@@ -973,28 +960,28 @@ window.onload = function () {
             queue.push(['img', imageToSave]);
             drawImage();
         };
-    }
+    };
 
 
-    function draw(e) {
+    let draw = (event) => {
         canvasLayerContext.lineWidth = paintSize.value;
         canvasLayerContext.strokeStyle = paintColor.value;
         canvasLayerContext.lineCap = 'round';
         canvasLayerContext.filter = 'none';
 
-        let x = e.offsetX;
-        let y = e.offsetY;
-        let dx = e.movementX;
-        let dy = e.movementY;
+        let x = event.offsetX;
+        let y = event.offsetY;
+        let dx = event.movementX;
+        let dy = event.movementY;
 
-        if (e.buttons > 0) {
+        if (event.buttons > 0) {
             canvasLayerContext.beginPath();
             canvasLayerContext.moveTo(x, y);
             canvasLayerContext.lineTo(x - dx, y - dy);
             canvasLayerContext.stroke();
             canvasLayerContext.closePath();
         }
-    }
+    };
     
     paintBtn.addEventListener('click', () => {
         addNewCanvasLayer();
@@ -1008,7 +995,7 @@ window.onload = function () {
         drawImage();
     });
     
-    function addListenersToCanvasLayer() {
+    let addListenersToCanvasLayer = () => {
         canvasLayer.addEventListener('mouseleave', () => {
             canvas.removeEventListener('mousemove', draw);
             saveLineToImage();
@@ -1017,6 +1004,6 @@ window.onload = function () {
             };
             setTimeout(deleteLayer, 1000);
         });
-    }
+    };
 };
 
