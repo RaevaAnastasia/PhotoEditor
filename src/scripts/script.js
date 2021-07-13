@@ -510,9 +510,10 @@ window.onload = function () {
             textElement.setAttribute('draggable', true);
             canvasContainer.appendChild(textElement);
 
-            let textContent = document.createElement('div');
+            let textContent = document.createElement('p');
             textContent.textContent = this.text;
             textContent.style.color = this.color;
+            textContent.style.display = 'block';
             textContent.style.fontSize = `${this.size}px`;
             textContent.style.lineHeight = `${this.size * 1.4}px`;
             textElement.appendChild(textContent);
@@ -562,7 +563,7 @@ window.onload = function () {
     
     let applyText = (event) => {
         let element = event.target.closest('div');
-        let textContent = element.querySelector('div');
+        let textContent = element.querySelector('p');
         let size = textSize.value;
         let textX = textContent.getBoundingClientRect().x - canvas.getBoundingClientRect().x;
         let textY = textContent.getBoundingClientRect().y - canvas.getBoundingClientRect().y;
@@ -595,6 +596,7 @@ window.onload = function () {
 
     //Function for moving modal with text or sticker
     let MoveElement = (event) => {
+        stopDefaultEvent(event);
         let element = event.target.closest('div');
         let shiftX = event.clientX - element.getBoundingClientRect().left / 2;
         let shiftY = event.clientY - element.getBoundingClientRect().top / 2;
@@ -608,17 +610,52 @@ window.onload = function () {
             element.style.top = y - shiftY + 'px';
         };
     
-        let onMouseMove = (event) => moveAt(event.pageX, event.pageY);
+        let onMouseMove = (event) => {
+            if (event.buttons > 0) {
+                moveAt(event.pageX, event.pageY);
+            }
+        };
         
         let deleteListeners = () => {
             canvasContainer.removeEventListener('mousemove',onMouseMove);
             element.onmouseup = null;
         };
         
-        canvasContainer.addEventListener('mousemove', onMouseMove);
+        canvasContainer.addEventListener('mousemove', throttle(onMouseMove, 400));
         element.addEventListener('mouseup', deleteListeners);
         element.addEventListener('mouseout', deleteListeners);
     };
+
+    //Throttling for mouse event
+
+    function throttle(func, ms) {
+        let isThrottled = false,
+            savedArgs,
+            savedThis;
+
+        function wrapper() {
+            if (isThrottled) {
+                savedArgs = arguments;
+                savedThis = this;
+
+                return;
+            }
+
+            func.apply(this, arguments);
+
+            isThrottled = true;
+
+            setTimeout(function() {
+                isThrottled = false; 
+                if (savedArgs) {
+                    wrapper.apply(savedThis, savedArgs);
+                    savedArgs = savedThis = null;
+                }
+            }, ms);
+        }
+
+        return wrapper;
+    }
     
     let initTextModal = () => {
         if (textInput.value == '') {
