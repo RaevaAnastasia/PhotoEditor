@@ -1,9 +1,0 @@
-.editor {
-   display: flex;
-   justify-content: space-between;
-   margin-bottom: 2rem;
-   
-   @media screen and (max-width: 1000px) {
-      flex-direction: column;
-   }
-}
